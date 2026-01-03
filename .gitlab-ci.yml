@@ -1,7 +1,7 @@
 stages:
   - test
 
-run_test:
+hello_job:
   stage: test
   script:
-    - echo "CI pipeline running"
+    - echo "CI/CD pipeline is running successfully!"
