@@ -32,7 +32,7 @@ const Register = () => {
             src={helpIcon}
             className="h-[13px] absolute left-[-17px] top-[2px] rounded-[50%]"
           />
-          Contact Us
+          Contact
         </div>
       </header>
 

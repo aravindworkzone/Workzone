@@ -1,7 +1,17 @@
-stages:
-  - test
+image: node:18
 
-hello_job:
-  stage: test
+stages:
+  - install
+  - build
+
+frontend_install:
+  stage: install
   script:
-    - echo "CI/CD pipeline is running successfully!"
+    - cd frontend
+    - npm install
+
+frontend_build:
+  stage: build
+  script:
+    - cd frontend
+    - npm run build
