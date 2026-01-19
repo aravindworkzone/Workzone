@@ -1,5 +1,6 @@
 import { LogOut } from "lucide-react";
 import logo from "../assets/main_logo.png";
+import API from "../utils/api";
 
 const Header = () => {
   const today = new Date().toDateString();
@@ -15,8 +16,15 @@ const Header = () => {
       : Math.round((last30CompletedTasks / last30TotalTasks) * 100);
 
   const logoutHandler = () => {
-    localStorage.removeItem("isAuth");
-    window.location.reload();
+    API.post("auth/logout")
+      .then((res) => {
+        console.log("Logout successful:", res.data);
+        localStorage.removeItem("isAuth");
+        window.location.reload();
+      })
+      .catch((err) => {
+        console.error("Logout failed:", err.response.data);
+      });
   }
 
   return (
