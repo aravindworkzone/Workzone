@@ -22,3 +22,16 @@ export const registerSchema = z
     message: "Passwords do not match",
     path: ["confirmPassword"]
   });
+
+  export const loginSchema = z
+    .object({
+      username: z
+        .string()
+        .min(3, "Username must be at least 3 characters"),
+
+      password: z
+        .string()
+        .min(8, "Password must be at least 8 characters")
+        .regex(/[0-9]/,"Password must constain at least one Number")
+        .regex(/[^A-Za-z0-9]/,"Password must constain at least one Special Character"),
+    });
