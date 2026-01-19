@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useState,useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { registerSchema } from "../components/zodValid";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -6,6 +6,7 @@ import logo from "../assets/todo_logo.png";
 import helpIcon from "../assets/help.png";
 import API from "../utils/api";
 import { useNavigate,Link } from "react-router-dom";
+import { Eye, EyeOff } from "lucide-react";
 
 const Register = () => {
   const {
@@ -17,20 +18,21 @@ const Register = () => {
     resolver: zodResolver(registerSchema),
   });
 
+  const [showPassword, setShowPassword] = useState(false);
+
   const navigate = useNavigate();
 
   const onSubmit = (e) => {
     console.log(e);
-    // API.post("userregistration/", e)
-    //   .then((res) => {
-    //     console.log("Registration successful:", res.data);
-    //     reset();
-    //     navigate("/login");
-    //   })
-    //   .catch((err) => {
-    //     console.error("Registration failed:", err.response.data);
-    //   });
-    navigate("/login");
+    API.post("auth/register", e)
+      .then((res) => {
+        console.log("Registration successful:", res.data);
+        reset();
+        navigate("/login");
+      })
+      .catch((err) => {
+        console.error("Registration failed:", err.response.data);
+      });
   };
 
   return (
@@ -124,13 +126,13 @@ const Register = () => {
             </div>
 
             {/* PASSWORD */}
-            <div>
+            <div className="relative">
               <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
                 Password
               </label>
               <input
                 autoComplete="off"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 className="
                   w-full bg-transparent
                   border-b border-gray-300 dark:border-gray-700
@@ -139,6 +141,11 @@ const Register = () => {
                 "
                 {...register("password")}
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 bottom-1 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+              >{showPassword ? <EyeOff size={18} /> : <Eye size={18} />}</button>
               {errors.password && (
                 <p className="text-xs text-red-500 mt-1">
                   {errors.password.message}
