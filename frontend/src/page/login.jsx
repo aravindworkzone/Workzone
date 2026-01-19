@@ -1,47 +1,52 @@
-import { useEffect } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { registerSchema } from "../components/zodValid";
+import { loginSchema } from "../components/zodValid";
 import { zodResolver } from "@hookform/resolvers/zod";
 import logo from "../assets/todo_logo.png";
 import helpIcon from "../assets/help.png";
 import API from "../utils/api";
-import { useNavigate,Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
-const Register = () => {
+const login = () => {
   const {
     register,
-    reset,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm({
-    resolver: zodResolver(registerSchema),
+    resolver: zodResolver(loginSchema),
   });
+
+  const [apiError, setApiError] = useState(null);
 
   const navigate = useNavigate();
 
   const onSubmit = (e) => {
     console.log(e);
-    // API.post("userregistration/", e)
+    // API.post("login/", e)
     //   .then((res) => {
-    //     console.log("Registration successful:", res.data);
+    //     console.log("Login successful:", res.data);
     //     reset();
-    //     navigate("/login");
     //   })
     //   .catch((err) => {
-    //     console.error("Registration failed:", err.response.data);
+    //     console.error("Login failed:", err.response.data);
+    //     setApiError("Invalid username or password");
     //   });
-    navigate("/login");
+      localStorage.setItem("isAuth", "true");
+      const isAuth = localStorage.getItem("isAuth");
+      if (isAuth) {
+        navigate("/");
+      }
   };
 
   return (
     <div className="min-h-screen bg-white dark:bg-[#0b1120] flex flex-col relative transition-colors">
-      
       {/* HEADER */}
       <header className="sm:absolute sm:h-6 h-16 flex items-center justify-between px-[50px] top-[15px] w-full">
         <div className="flex items-center gap-2">
           <img src={logo} className="h-7" />
         </div>
-        
+
         <div className="flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 cursor-pointer relative">
           <img
             src={helpIcon}
@@ -53,7 +58,6 @@ const Register = () => {
 
       {/* CENTER CONTENT */}
       <main className="flex-1 flex items-center justify-center px-4">
-        
         {/* REGISTRATION CARD */}
         <div
           className="
@@ -66,11 +70,11 @@ const Register = () => {
           "
         >
           <h2 className="text-2xl font-semibold text-gray-900 dark:text-gray-100 text-center">
-            Create account
+            Welcome
           </h2>
 
           <p className="text-sm text-gray-500 dark:text-gray-400 text-center mt-2 mb-10 font-sans">
-            Manage your tasks effortlessly
+            let's do tasks effortlessly
           </p>
 
           <form
@@ -100,29 +104,6 @@ const Register = () => {
               )}
             </div>
 
-            {/* EMAIL */}
-            <div>
-              <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
-                Email
-              </label>
-              <input
-                autoComplete="email"
-                type="text"
-                className="
-                  w-full bg-transparent
-                  border-b border-gray-300 dark:border-gray-700
-                  py-2 text-gray-900 dark:text-gray-100
-                  focus:outline-none focus:border-blue-600 dark:focus:border-blue-500
-                "
-                {...register("email")}
-              />
-              {errors.email && (
-                <p className="text-xs text-red-500 mt-1">
-                  {errors.email.message}
-                </p>
-              )}
-            </div>
-
             {/* PASSWORD */}
             <div>
               <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
@@ -139,32 +120,14 @@ const Register = () => {
                 "
                 {...register("password")}
               />
-              {errors.password && (
+              {(errors.password) && (
                 <p className="text-xs text-red-500 mt-1">
                   {errors.password.message}
                 </p>
               )}
-            </div>
-
-            {/* CONFIRM PASSWORD */}
-            <div>
-              <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
-                Confirm Password
-              </label>
-              <input
-                autoComplete="off"
-                type="password"
-                className="
-                  w-full bg-transparent
-                  border-b border-gray-300 dark:border-gray-700
-                  py-2 text-gray-900 dark:text-gray-100
-                  focus:outline-none focus:border-blue-600 dark:focus:border-blue-500
-                "
-                {...register("confirmPassword")}
-              />
-              {errors.confirmPassword && (
+              {(apiError !== null) && (
                 <p className="text-xs text-red-500 mt-1">
-                  {errors.confirmPassword.message}
+                  {apiError}
                 </p>
               )}
             </div>
@@ -180,14 +143,14 @@ const Register = () => {
                 font-semibold transition
               "
             >
-              Create account
+              Login
             </button>
           </form>
 
           <p className="text-sm text-gray-500 dark:text-gray-400 text-center mt-8">
-            Already have an account?{" "}
-            <Link to="/login" className="text-blue-600 dark:text-blue-400 font-medium cursor-pointer hover:underline">
-              Sign in
+            Create an account?{" "}
+            <Link to="/register" className="text-blue-600 dark:text-blue-400 font-medium cursor-pointer hover:underline">
+              Sign up
             </Link>
           </p>
         </div>
@@ -196,4 +159,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default login;
