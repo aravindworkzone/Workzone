@@ -19,6 +19,7 @@ const Register = () => {
   });
 
   const [showPassword, setShowPassword] = useState(false);
+  const [userExist, setUserExist] = useState(false);
 
   const navigate = useNavigate();
 
@@ -32,6 +33,7 @@ const Register = () => {
       })
       .catch((err) => {
         console.error("Registration failed:", err.response.data);
+        setUserExist('User already exists');
       });
   };
 
@@ -172,6 +174,11 @@ const Register = () => {
               {errors.confirmPassword && (
                 <p className="text-xs text-red-500 mt-1">
                   {errors.confirmPassword.message}
+                </p>
+              )}
+              {userExist && (
+                <p className="text-xs text-red-500 mt-1">
+                  {userExist}
                 </p>
               )}
             </div>
