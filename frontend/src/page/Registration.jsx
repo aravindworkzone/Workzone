@@ -128,26 +128,28 @@ const Register = () => {
             </div>
 
             {/* PASSWORD */}
-            <div className="relative">
+            <div>
               <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
                 Password
               </label>
-              <input
-                autoComplete="off"
-                type={showPassword ? "text" : "password"}
-                className="
-                  w-full bg-transparent
-                  border-b border-gray-300 dark:border-gray-700
-                  py-2 text-gray-900 dark:text-gray-100
-                  focus:outline-none focus:border-blue-600 dark:focus:border-blue-500
-                "
-                {...register("password")}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 bottom-1 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-              >{showPassword ? <EyeOff size={18} /> : <Eye size={18} />}</button>
+              <div className="relative">
+                <input
+                  autoComplete="off"
+                  type={showPassword ? "text" : "password"}
+                  className="
+                    w-full bg-transparent
+                    border-b border-gray-300 dark:border-gray-700
+                    py-2 text-gray-900 dark:text-gray-100
+                    focus:outline-none focus:border-blue-600 dark:focus:border-blue-500
+                  "
+                  {...register("password")}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                >{showPassword ? <EyeOff size={18} /> : <Eye size={18} />}</button>
+              </div>
               {errors.password && (
                 <p className="text-xs text-red-500 mt-1">
                   {errors.password.message}
