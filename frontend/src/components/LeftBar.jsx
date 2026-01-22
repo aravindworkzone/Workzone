@@ -1,16 +1,24 @@
+import StatusCard from "./StatusCard";
+
 const LeftSidebar = () => {
   // Replace later with Redux / API
-  const totalTasks = 6;
-  const completedTasks = 5;
-  const pendingTasks = totalTasks - completedTasks;
+
+const taskStatus = [
+  {
+    date: "21 Jan",
+    totalTasks: 6,
+    completedTasks: 5
+  },
+  {
+    date: "20 Jan",
+    totalTasks: 6,
+    completedTasks: 6
+  }
+];
+
 
   const today = new Date().toDateString();
   const startedDate = "01 Jan 2026";
-
-  const cardColor =
-    pendingTasks > 0
-      ? "bg-red-600"
-      : "bg-green-600";
 
   return (
     <aside className="flex w-full lg:w-64 lg:border-r bg-gray-50 dark:bg-gray-900 flex-col justify-between p-4">
@@ -25,22 +33,15 @@ const LeftSidebar = () => {
           </p>
         </div>
 
-        {/* STATUS CARD */}
-        <div className={`rounded-lg p-3 text-white ${cardColor}`}>
-          <h3 className="text-sm font-semibold mb-2">
-            Task Status
-          </h3>
+        {taskStatus.map(({ date, totalTasks, completedTasks }) => (
+          <StatusCard
+            key={date}
+            date={date}
+            totalTasks={totalTasks}
+            completedTasks={completedTasks}
+          />
+        ))}
 
-          <div className="flex justify-between text-xs">
-            <span>Pending</span>
-            <span>{pendingTasks}</span>
-          </div>
-
-          <div className="flex justify-between text-xs">
-            <span>Completed</span>
-            <span>{completedTasks}</span>
-          </div>
-        </div>
       </div>
 
       {/* BOTTOM */}
