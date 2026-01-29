@@ -1,0 +1,116 @@
+import AddTask from "../components/AddTask";
+import TaskSlot from "../components/TaskSlot";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import {updatetask, deletetask, completetask} from '../redux/slice/task';
+
+const MainLayout = () => {
+
+  const tasks = useSelector(state => state.task);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    tasks.forEach(task => {
+      console.log(task);
+    });
+  }, [tasks]);
+
+
+  const [taskLoading, setTaskLoading] = useState({});
+  const [taskError, setTaskError] = useState([]);
+
+ const handleUpdate = (id) => {
+    if (taskLoading[id]) return;
+
+    setTaskLoading(l => ({ ...l,[id] : 'update' }));
+
+    const result = true;
+
+    if(result){
+      setTimeout(() => setTaskLoading(l => ({ ...l,[id] : '' })), 3000);
+    }else{
+      setTimeout(() => setTaskError(e => ([ ...e, id ])), 3000);
+      setTimeout(() => {
+        setTaskError(e => e.filter(t => t !== id ));
+        setTaskLoading(l => ({ ...l,[id] : '' }));
+      }, 6000);
+
+      return;
+    }
+    setTimeout(() => dispatch(completetask({ id })), 3000);
+  }
+
+  const handleDelete = (id) => {
+    if (taskLoading[id]) return;
+
+    setTaskLoading(l => ({ ...l,[id] : 'delete' }));
+
+    const result = true;
+    
+    if(result){
+      setTimeout(() => dispatch(deletetask({ id })), 3000);
+    }else{
+      setTimeout(() => setTaskError(e => ([ ...e, id ])), 3000);
+      setTimeout(() => {
+        setTaskError(e => e.filter(t => t !== id ));
+        setTaskLoading(l => ({ ...l,[id] : '' }));
+      }, 6000);
+      return;
+    }
+  }
+
+  const handleEdit = (id, description = 'test') => {
+    if (taskLoading[id]) {
+      dispatch(updatetask({ id, description }));
+      setTaskLoading(l => ({ ...l,[id] : '' }));
+      return;
+    };
+    setTaskLoading(l => ({ ...l,[id] : 'edit' }));
+
+    const result = true;
+    
+    // if(result){
+    //   setTimeout(() => setTasks((task) => task.map((t) => t.id === id ? { ...t, description } : t)), 3000);
+    // }else{
+    //   setTimeout(() => setTaskError(e => ([ ...e, id ])), 3000);
+    //   setTimeout(() => {
+    //     setTaskError(e => e.filter(t => t !== id ));
+    //     setTaskLoading(l => ({ ...l,[id] : '' }));
+    //   }, 6000);
+    //   return;
+    // }
+  }
+
+
+  return (
+    <main className="flex-1 p-4 sm:p-6 overflow-y-auto">
+      <AddTask />
+      <div className="
+        bg-white dark:bg-gray-800
+        p-4 rounded-lg shadow
+      ">
+        <h2 className="font-semibold mb-3 text-gray-900 dark:text-gray-100">
+          Today Tasks
+        </h2>
+
+        <div className="space-y-2">
+          {tasks.length > 0 ? tasks.map((t) => <TaskSlot 
+              key={t.id} 
+              id={t.id} 
+              description={t.description} 
+              completed={t.completed} 
+              onToggle={handleUpdate} 
+              onAction={taskLoading[t.id] ?? ''}
+              onError={taskError.includes(t.id) ? true : false}
+              onCurd={t.routine}
+              onRemove={handleDelete} 
+              onEdit={handleEdit} 
+              />) : (<p className="flex justify-center text-sm text-gray-600 dark:text-gray-400">No Tasks Today</p>)}
+        </div>
+      </div>
+    </main>
+    );
+};
+
+export default MainLayout;
