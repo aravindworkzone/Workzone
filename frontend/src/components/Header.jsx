@@ -2,21 +2,17 @@ import { LogOut } from "lucide-react";
 import logo from "../assets/main_logo.png";
 import { useDispatch } from "react-redux";
 import { logout } from "../redux/slice/auth";
-import { useSelector } from "react-redux";
+import { addtask } from "../redux/slice/task";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useCheckUserQuery} from "../redux/api";
-import { useLogoutUserMutation} from "../redux/api";
+import { useGetTaskQuery} from "../redux/api/task";
+import { useCheckUserQuery, useLogoutUserMutation} from "../redux/api/auth";
 
 const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
-  // const { user } = useSelector((state) => state.auth);
-  const { data, isLoading, isError } = useCheckUserQuery();
-
+  
   const [logoutUser] = useLogoutUserMutation();
-
   const handleLogout = async () => {
     try {
       const result = await logoutUser().unwrap();
@@ -29,11 +25,19 @@ const Header = () => {
     }
   };
 
+  const { data, isLoading, isError } = useCheckUserQuery();
   useEffect(() => {
     if (!isLoading && !data?.user) {
       navigate("/login", { replace: true });
     }
   }, [data, isError, isLoading]);
+
+  const { data: tasks, isLoading: taskLoading } = useGetTaskQuery();
+  useEffect(() => {
+    if(taskLoading) return;
+    dispatch(addtask(tasks));
+    console.log(tasks);
+  },[tasks])
 
   // 🔹 Replace later with Redux / API
   const last30TotalTasks = 120;

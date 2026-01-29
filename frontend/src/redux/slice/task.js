@@ -5,7 +5,13 @@ const taskSlice = createSlice({
     initialState: [],
     reducers: {
         addtask: (state, action) => {
-            state.push(action.payload);
+            const task = Array.isArray(action.payload) ? action.payload : [action.payload];
+
+            task.map(t => {
+                const existingTask = state.find((task) => task.id === t.id);
+                if (existingTask) return;
+                state.push(t);
+            });
         },
         updatetask: (state, action) => {
             const { id, description } = action.payload;
