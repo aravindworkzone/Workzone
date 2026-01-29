@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import {updatetask, deletetask, completetask} from '../redux/slice/task';
+import {useUpdateTaskMutation,useDeleteTaskMutation,useEditTaskMutation} from '../redux/api/task';
 
 const MainLayout = () => {
 
@@ -16,70 +17,71 @@ const MainLayout = () => {
     });
   }, [tasks]);
 
+  const [updateTask] = useUpdateTaskMutation();
+  const [DeleteTask] = useDeleteTaskMutation();
+  const [EditTask] = useEditTaskMutation();
 
   const [taskLoading, setTaskLoading] = useState({});
   const [taskError, setTaskError] = useState([]);
 
- const handleUpdate = (id) => {
+ const handleUpdate = async (id) => {
     if (taskLoading[id]) return;
 
     setTaskLoading(l => ({ ...l,[id] : 'update' }));
 
-    const result = true;
+    const result = await updateTask({ id }).unwrap();
 
     if(result){
-      setTimeout(() => setTaskLoading(l => ({ ...l,[id] : '' })), 3000);
+      setTaskLoading(l => ({ ...l,[id] : '' }));
     }else{
-      setTimeout(() => setTaskError(e => ([ ...e, id ])), 3000);
+      setTaskError(e => ([ ...e, id ]));
       setTimeout(() => {
         setTaskError(e => e.filter(t => t !== id ));
         setTaskLoading(l => ({ ...l,[id] : '' }));
-      }, 6000);
+      }, 3000);
 
       return;
     }
-    setTimeout(() => dispatch(completetask({ id })), 3000);
+    dispatch(completetask({ id }));
   }
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (taskLoading[id]) return;
 
     setTaskLoading(l => ({ ...l,[id] : 'delete' }));
 
-    const result = true;
+    const result = await DeleteTask({ id }).unwrap();
     
     if(result){
-      setTimeout(() => dispatch(deletetask({ id })), 3000);
+      dispatch(deletetask({ id }));
     }else{
-      setTimeout(() => setTaskError(e => ([ ...e, id ])), 3000);
+      setTaskError(e => ([ ...e, id ]));
       setTimeout(() => {
         setTaskError(e => e.filter(t => t !== id ));
         setTaskLoading(l => ({ ...l,[id] : '' }));
-      }, 6000);
+      }, 3000);
       return;
     }
   }
 
-  const handleEdit = (id, description = 'test') => {
+  const handleEdit = async (id, description = 'test') => {
     if (taskLoading[id]) {
-      dispatch(updatetask({ id, description }));
-      setTaskLoading(l => ({ ...l,[id] : '' }));
+      setTaskLoading(l => ({ ...l,[id] : 'update' }));
+      const result =  await EditTask({ id, description }).unwrap();
+      if(result){
+        dispatch(updatetask({ id, description }));
+        setTaskLoading(l => ({ ...l,[id] : '' }));
+      }else{
+        setTaskError(e => ([ ...e, id ]));
+        setTimeout(() => {
+          setTaskError(e => e.filter(t => t !== id ));
+          setTaskLoading(l => ({ ...l,[id] : '' }));
+        }, 3000);
+      }
+
       return;
     };
     setTaskLoading(l => ({ ...l,[id] : 'edit' }));
-
-    const result = true;
-    
-    // if(result){
-    //   setTimeout(() => setTasks((task) => task.map((t) => t.id === id ? { ...t, description } : t)), 3000);
-    // }else{
-    //   setTimeout(() => setTaskError(e => ([ ...e, id ])), 3000);
-    //   setTimeout(() => {
-    //     setTaskError(e => e.filter(t => t !== id ));
-    //     setTaskLoading(l => ({ ...l,[id] : '' }));
-    //   }, 6000);
-    //   return;
-    // }
   }
 
 

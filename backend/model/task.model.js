@@ -4,6 +4,7 @@ const taskSchema = new mongoose.Schema({
     description: { type: String, required: true },
     completed: { type: Boolean, required: true, default: false },
     routine: { type: Boolean, required: true, default: true },
+    deleted: { type: Boolean, required: true, default: false },
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'UserAuth', required: true },
 }, { timestamps: true });
 

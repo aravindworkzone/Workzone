@@ -6,7 +6,7 @@ import logo from "../assets/todo_logo.png";
 import helpIcon from "../assets/help.png";
 import { useNavigate,Link } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
-import {useRegisterUserMutation} from "../redux/api";
+import {useRegisterUserMutation} from "../redux/api/auth";
 
 const Register = () => {
   const {
