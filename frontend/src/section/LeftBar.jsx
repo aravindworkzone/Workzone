@@ -1,4 +1,4 @@
-import StatusCard from "./StatusCard";
+import StatusCard from "../components/StatusCard";
 
 const LeftSidebar = () => {
   const today = new Date().toDateString();

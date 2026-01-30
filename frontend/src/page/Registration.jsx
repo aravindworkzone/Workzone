@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { registerSchema } from "../components/zodValid";
+import { registerSchema } from "../utils/zodValid";
 import { zodResolver } from "@hookform/resolvers/zod";
 import logo from "../assets/todo_logo.png";
 import helpIcon from "../assets/help.png";

@@ -1,11 +1,9 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { loginSchema } from "../components/zodValid";
+import { loginSchema } from "../utils/zodValid";
 import { zodResolver } from "@hookform/resolvers/zod";
 import logo from "../assets/todo_logo.png";
 import helpIcon from "../assets/help.png";
-import {login} from "../redux/slice/auth";
-import { useDispatch } from "react-redux";
 import { useLoginUserMutation } from "../redux/api/auth";
 import { useNavigate, Link } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
@@ -24,20 +22,12 @@ const loginModal = () => {
   const [apiError, setApiError] = useState(null);
 
   const navigate = useNavigate();
-  const dispatch = useDispatch();
 
-  const [loginUser] = useLoginUserMutation();
+  const [loginUser, {isError, error}] = useLoginUserMutation();
 
   const onSubmit = async (e) => {
-    console.log(e);
-    try {
-      const result = await loginUser(e).unwrap();
-      console.log(result);
-      dispatch(login(result));
+      await loginUser(e).unwrap();
       navigate("/");
-    } catch (error) {
-      setApiError(error?.data.message);
-    }
   };
 
   return (
@@ -133,11 +123,12 @@ const loginModal = () => {
                   {errors.password.message}
                 </p>
               )}
-              {(apiError !== null) && (
+              {isError && (
                 <p className="text-xs text-red-500 mt-1">
-                  {apiError}
+                  {error || "Login failed"}
                 </p>
               )}
+
             </div>
 
             {/* BUTTON */}

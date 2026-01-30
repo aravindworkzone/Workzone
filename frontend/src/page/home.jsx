@@ -1,8 +1,8 @@
 import Header from "../components/Header";
 import Footer from "../components/footer";
-import LeftSidebar from "../components/LeftBar";
-import RightSidebar from "../components/RightBar";
-import MainLayout from "../components/MainLay";
+import LeftSidebar from "../section/LeftBar";
+import RightSidebar from "../section/RightBar";
+import MainLayout from "../section/MainLay";
 import { useState } from "react";
 
 

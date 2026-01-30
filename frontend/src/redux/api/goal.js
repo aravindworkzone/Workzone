@@ -1,37 +1,37 @@
 import { BaseApi } from './api';
 
-export const task_api = BaseApi.injectEndpoints({
+export const goal_api = BaseApi.injectEndpoints({
     endpoints: (builder) => ({
-        AddTask: builder.mutation({
+        Addgoal: builder.mutation({
             query: (credentials) => ({
-                url: 'task/addtask',
+                url: 'goal/addgoal',
                 method: 'POST',
                 body: credentials,
             }),
         }),
-        GetTask: builder.query({
+        Getgoal: builder.query({
             query: () => ({
-                url: 'task/gettask',
+                url: 'goal/getgoal',
                 method: 'GET',
             }),
         }),
-        UpdateTask: builder.mutation({
+        Updategoal: builder.mutation({
             query: (credentials) => ({
-                url: 'task/updatetask',
+                url: 'goal/updategoal',
                 method: 'POST',
                 body: credentials,
             }),
         }),
-        DeleteTask: builder.mutation({
+        Deletegoal: builder.mutation({
             query: (credentials) => ({
-                url: 'task/deletetask',
+                url: 'goal/deletegoal',
                 method: 'POST',
                 body: credentials,
             }),
         }),
-        EditTask: builder.mutation({
+        Editgoal: builder.mutation({
             query: (credentials) => ({
-                url: 'task/edittask',
+                url: 'goal/editgoal',
                 method: 'POST',
                 body: credentials,
             }),
@@ -39,4 +39,4 @@ export const task_api = BaseApi.injectEndpoints({
     }),
 })
 
-export const { useAddTaskMutation, useGetTaskQuery, useUpdateTaskMutation, useDeleteTaskMutation, useEditTaskMutation } = task_api;
+export const { useAddgoalMutation, useGetgoalQuery, useUpdategoalMutation, useDeletegoalMutation, useEditgoalMutation } = goal_api;
