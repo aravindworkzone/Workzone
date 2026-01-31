@@ -9,6 +9,7 @@ export const auth_api = BaseApi.injectEndpoints({
                 method: 'POST',
                 body: credentials,
             }),
+            invalidatesTags: ['Auth'],
         }),
         logoutUser: builder.mutation({
             query: (credentials) => ({
@@ -16,6 +17,7 @@ export const auth_api = BaseApi.injectEndpoints({
                 method: 'POST',
                 body: credentials,
             }),
+            invalidatesTags: ['Auth'],
         }),
         registerUser: builder.mutation({
             query: (credentials) => ({
@@ -23,15 +25,15 @@ export const auth_api = BaseApi.injectEndpoints({
                 method: 'POST',
                 body: credentials,
             }),
+            invalidatesTags: ['Auth'],
         }),
         checkUser: builder.query({
             query: () => ({
                 url: 'auth/check',
                 method: 'GET',
-                providesTags: ['Auth'],
             }),
+            providesTags: ['Auth'],
         }),
-        invalidatesTags: ['Auth'],
     }),
 })
 

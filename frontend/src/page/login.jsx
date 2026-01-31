@@ -19,15 +19,14 @@ const loginModal = () => {
 
   const [showPassword, setShowPassword] = useState(false);
 
-  const [apiError, setApiError] = useState(null);
-
   const navigate = useNavigate();
 
   const [loginUser, {isError, error}] = useLoginUserMutation();
 
   const onSubmit = async (e) => {
-      await loginUser(e).unwrap();
-      navigate("/");
+    const result = await loginUser(e).unwrap();
+    if(!result) return;
+    navigate("/");
   };
 
   return (
@@ -128,7 +127,7 @@ const loginModal = () => {
                   {error || "Login failed"}
                 </p>
               )}
-
+              {/* <button className="text-blue-600 dark:text-blue-400 text-[11px] cursor-pointer hover:underline">Forget Password?</button> */}
             </div>
 
             {/* BUTTON */}
@@ -139,7 +138,7 @@ const loginModal = () => {
                 bg-blue-600 hover:bg-blue-700
                 dark:bg-blue-500 dark:hover:bg-blue-600
                 text-white py-3 rounded-xl
-                font-semibold transition
+                font-semibold transition cursor-pointer
               "
             >
               Login

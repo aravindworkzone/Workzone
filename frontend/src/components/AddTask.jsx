@@ -11,11 +11,12 @@ const AddTask = ({ UseCase, HandleAddTask }) => {
   };
 
   return (
-    <div className="
+    <form className="
       bg-white dark:bg-gray-800
       p-4 rounded-lg shadow
       mb-4
-    ">
+    "  onSubmit={(e) => {e.preventDefault();HandleOnClick();}}
+    >
       <h2 className="font-semibold mb-3 text-gray-900 dark:text-gray-100">
         {UseCase}
       </h2>
@@ -37,12 +38,12 @@ const AddTask = ({ UseCase, HandleAddTask }) => {
         <button type="submit" className="
           bg-blue-600 hover:bg-blue-700
           text-white
-          px-4 py-2 rounded
-        " onClick={() => {HandleOnClick()}}>
+          px-4 py-2 rounded cursor-pointer
+        ">
           Add
         </button>
       </div>
-    </div>
+    </form>
   );
 };
 
