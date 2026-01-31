@@ -1,6 +1,6 @@
 import { Clock, CheckCircle, Repeat } from "lucide-react";
 
-const Footer = ({ activeTab, setActiveTab }) => {
+const Footer = ({appstatus, OnToggle}) => {
   const base =
     "flex flex-col items-center text-xs transition";
   const active =
@@ -19,8 +19,8 @@ const Footer = ({ activeTab, setActiveTab }) => {
     >
       {/* History */}
       <button
-        onClick={() => setActiveTab("history")}
-        className={`${base} ${activeTab === "history" ? active : inactive}`}
+        onClick={() => OnToggle("history")}
+        className={`${base} ${appstatus === "history" ? active : inactive}`}
       >
         <Clock size={18} />
         <span>Insights</span>
@@ -28,8 +28,8 @@ const Footer = ({ activeTab, setActiveTab }) => {
 
       {/* Today */}
       <button
-        onClick={() => setActiveTab("today")}
-        className={`${base} ${activeTab === "today" ? active : inactive}`}
+        onClick={() => OnToggle("today")}
+        className={`${base} ${appstatus === "today" ? active : inactive}`}
       >
         <CheckCircle size={18} />
         <span>Today</span>
@@ -37,8 +37,8 @@ const Footer = ({ activeTab, setActiveTab }) => {
 
       {/* Routine */}
       <button
-        onClick={() => setActiveTab("routine")}
-        className={`${base} ${activeTab === "routine" ? active : inactive}`}
+        onClick={() => OnToggle("routine")}
+        className={`${base} ${appstatus === "routine" ? active : inactive}`}
       >
         <Repeat size={18} />
         <span>Routine</span>

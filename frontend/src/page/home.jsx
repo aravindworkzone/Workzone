@@ -1,41 +1,50 @@
 import Header from "../components/Header";
 import Footer from "../components/footer";
-import LeftSidebar from "../components/LeftBar";
-import RightSidebar from "../components/RightBar";
-import MainLayout from "../components/MainLay";
-import { useState } from "react";
+import LeftSidebar from "../section/LeftBar";
+import RightSidebar from "../section/RightBar";
+import MainLayout from "../section/MainLay";
+import { useSelector, useDispatch } from "react-redux";
+import { setDeviceType } from "../redux/slice/deviceType";
+import { useEffect } from "react";
 
 
 const Home = () => {
 
-  const [appstatus, setAppStatus] = useState("laptop");
+  const appstatus = useSelector((state) => state.deviceType.deviceType);
+
+  const dispatch = useDispatch();
+
+  const handleToogle = (value) => {
+    dispatch(setDeviceType(value))
+  }
+
+  useEffect(() => {
+    const isMobile = window.innerWidth < 1024;
+
+    dispatch(setDeviceType(isMobile ? "Mobile" : "Desktop"));
+  }, [dispatch]);
+
 
   const renderLayout = () => {
-    switch (appstatus) {
-      case "history":
-        return <LeftSidebar />;
+    if (appstatus === "history") return <LeftSidebar />;
+    if (appstatus === "routine") return <RightSidebar />;
+    if (appstatus === "today") return <MainLayout />;
 
-      case "routine":
-        return <RightSidebar />;
-
-      case "today":
-        return <MainLayout />;
-
-      case "laptop":
-        return (
-        <>
+    return (
+      <>
         <div className="hidden lg:flex">
-            <LeftSidebar />
+          <LeftSidebar />
         </div>
 
         <MainLayout />
-        
+
         <div className="hidden lg:flex">
-            <RightSidebar />
+          <RightSidebar />
         </div>
-      </>);
-    }
+      </>
+    );
   };
+
 
   return (
     <div className="h-screen flex flex-col bg-gray-100 dark:bg-gray-950">
@@ -45,7 +54,7 @@ const Home = () => {
         {renderLayout()}
       </div>
 
-      <Footer activeTab={appstatus} setActiveTab={setAppStatus} />
+      <Footer appstatus={appstatus} OnToggle={handleToogle} />
     </div>
   );
 };

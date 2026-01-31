@@ -1,23 +1,10 @@
-import StatusCard from "./StatusCard";
+import StatusCard from "../components/StatusCard";
+import { useGetTaskHistoryQuery } from "../redux/api/task";
 
 const LeftSidebar = () => {
   const today = new Date().toDateString();
 
-  const taskStatus = {
-    join: "01 Jan 2026",
-    tasks: [
-      {
-        date: "28 Jan",
-        totalTasks: 6,
-        completedTasks: 5
-      },
-      {
-        date: "27 Jan",
-        totalTasks: 6,
-        completedTasks: 6
-      }
-    ]
-  };
+  const { data: taskStatus = [] } = useGetTaskHistoryQuery();
 
   return (
     <aside className="flex w-full lg:w-64 lg:border-r bg-gray-50 dark:bg-gray-900 flex-col justify-between p-4">
@@ -32,12 +19,12 @@ const LeftSidebar = () => {
           </p>
         </div>
 
-        {taskStatus.tasks.map(({ date, totalTasks, completedTasks }) => (
+        {taskStatus.data?.length > 0 && taskStatus.data?.map((t) => (
           <StatusCard
-            key={date}
-            date={date}
-            totalTasks={totalTasks}
-            completedTasks={completedTasks}
+            key={t._id}
+            date={t._id}
+            totalTasks={t.totalTasks}
+            completedTasks={t.completedTasks}
           />
         ))}
 
@@ -47,7 +34,7 @@ const LeftSidebar = () => {
       <div className="border-t pt-2 text-xs text-gray-500 dark:text-gray-400">
         Started on{" "}
         <span className="font-medium text-gray-700 dark:text-gray-300">
-          {taskStatus.join}
+          {taskStatus.joinDate}
         </span>
       </div>
     </aside>

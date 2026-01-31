@@ -1,11 +1,9 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { loginSchema } from "../components/zodValid";
+import { loginSchema } from "../utils/zodValid";
 import { zodResolver } from "@hookform/resolvers/zod";
 import logo from "../assets/todo_logo.png";
 import helpIcon from "../assets/help.png";
-import {login} from "../redux/slice/auth";
-import { useDispatch } from "react-redux";
 import { useLoginUserMutation } from "../redux/api/auth";
 import { useNavigate, Link } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
@@ -21,23 +19,14 @@ const loginModal = () => {
 
   const [showPassword, setShowPassword] = useState(false);
 
-  const [apiError, setApiError] = useState(null);
-
   const navigate = useNavigate();
-  const dispatch = useDispatch();
 
-  const [loginUser] = useLoginUserMutation();
+  const [loginUser, {isError, error}] = useLoginUserMutation();
 
   const onSubmit = async (e) => {
-    console.log(e);
-    try {
-      const result = await loginUser(e).unwrap();
-      console.log(result);
-      dispatch(login(result));
-      navigate("/");
-    } catch (error) {
-      setApiError(error?.data.message);
-    }
+    const result = await loginUser(e).unwrap();
+    if(!result) return;
+    navigate("/");
   };
 
   return (
@@ -133,11 +122,12 @@ const loginModal = () => {
                   {errors.password.message}
                 </p>
               )}
-              {(apiError !== null) && (
+              {isError && (
                 <p className="text-xs text-red-500 mt-1">
-                  {apiError}
+                  {error || "Login failed"}
                 </p>
               )}
+              {/* <button className="text-blue-600 dark:text-blue-400 text-[11px] cursor-pointer hover:underline">Forget Password?</button> */}
             </div>
 
             {/* BUTTON */}
@@ -148,7 +138,7 @@ const loginModal = () => {
                 bg-blue-600 hover:bg-blue-700
                 dark:bg-blue-500 dark:hover:bg-blue-600
                 text-white py-3 rounded-xl
-                font-semibold transition
+                font-semibold transition cursor-pointer
               "
             >
               Login

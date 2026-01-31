@@ -1,23 +1,19 @@
 import { LogOut } from "lucide-react";
 import logo from "../assets/main_logo.png";
-import { useDispatch } from "react-redux";
-import { logout } from "../redux/slice/auth";
-import { addtask } from "../redux/slice/task";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useGetTaskQuery} from "../redux/api/task";
 import { useCheckUserQuery, useLogoutUserMutation} from "../redux/api/auth";
+import { useProductivityQuery} from "../redux/api/task";
 
 const Header = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { data: productivity = 0 } = useProductivityQuery();
   
   const [logoutUser] = useLogoutUserMutation();
   const handleLogout = async () => {
     try {
       const result = await logoutUser().unwrap();
       if(result){
-        dispatch(logout());
         navigate("/login", { replace: true });
       }
     } catch (error) {
@@ -27,26 +23,10 @@ const Header = () => {
 
   const { data, isLoading, isError } = useCheckUserQuery();
   useEffect(() => {
-    if (!isLoading && !data?.user) {
+    if (isError && !isLoading) {
       navigate("/login", { replace: true });
     }
   }, [data, isError, isLoading]);
-
-  const { data: tasks, isLoading: taskLoading } = useGetTaskQuery();
-  useEffect(() => {
-    if(taskLoading) return;
-    dispatch(addtask(tasks));
-    console.log(tasks);
-  },[tasks])
-
-  // 🔹 Replace later with Redux / API
-  const last30TotalTasks = 120;
-  const last30CompletedTasks = 96;
-
-  const productivity =
-    last30TotalTasks === 0
-      ? 0
-      : Math.round((last30CompletedTasks / last30TotalTasks) * 100);
 
   return (
     <header
@@ -94,7 +74,7 @@ const Header = () => {
             <title>Logout</title>
           </LogOut>
           <div className="flex items-center gap-2">
-            <p className="hidden lg:block text-sm font-medium">
+            <p className="hidden sm:block text-sm font-medium">
               Hi, {data?.user}
             </p>
             <div className="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center">

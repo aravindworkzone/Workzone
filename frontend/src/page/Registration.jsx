@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { registerSchema } from "../components/zodValid";
+import { registerSchema } from "../utils/zodValid";
 import { zodResolver } from "@hookform/resolvers/zod";
 import logo from "../assets/todo_logo.png";
 import helpIcon from "../assets/help.png";
@@ -18,20 +18,14 @@ const Register = () => {
   });
 
   const [showPassword, setShowPassword] = useState(false);
-  const [apiError, setApiError] = useState(null);
 
   const navigate = useNavigate();
-  const [registerUser] = useRegisterUserMutation();
+  const [registerUser, {isError, error}] = useRegisterUserMutation();
 
   const onSubmit = async(e) => {
-    console.log(e);
-    try {
-      const result = await registerUser(e).unwrap();
-      if(result){
-        navigate("/login");
-      }
-    } catch (error) {
-      setApiError(error?.data.message);
+    const result = await registerUser(e).unwrap();
+    if(result){
+      navigate("/login");
     }
   };
 
@@ -100,9 +94,9 @@ const Register = () => {
                   {errors.username.message}
                 </p>
               )}
-              {apiError && (
+              {isError && (
                 <p className="text-xs text-red-500 mt-1">
-                  {apiError}
+                  {error.data.message}
                 </p>
               )}
             </div>
@@ -196,7 +190,7 @@ const Register = () => {
                 bg-blue-600 hover:bg-blue-700
                 dark:bg-blue-500 dark:hover:bg-blue-600
                 text-white py-3 rounded-xl
-                font-semibold transition
+                font-semibold transition cursor-pointer
               "
             >
               Create account

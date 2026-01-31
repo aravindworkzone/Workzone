@@ -1,8 +1,6 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { BaseApi } from './api';
 
-export const task_api = createApi({
-    reducerPath: 'api/task',
-    baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:5000/api/', credentials: 'include' }),
+export const task_api = BaseApi.injectEndpoints({
     endpoints: (builder) => ({
         AddTask: builder.mutation({
             query: (credentials) => ({
@@ -10,12 +8,21 @@ export const task_api = createApi({
                 method: 'POST',
                 body: credentials,
             }),
+            invalidatesTags: ["Task"],
         }),
         GetTask: builder.query({
-            query: () => ({
-                url: 'task/gettask',
+            query: (mode) => ({
+                url: `task/gettask?type=${mode}`,
                 method: 'GET',
             }),
+            providesTags: ["Task"],
+        }),
+        GetTaskHistory: builder.query({
+            query: () => ({
+                url: `task/gettaskhistory`,
+                method: 'GET',
+            }),
+            providesTags: ["Task"],
         }),
         UpdateTask: builder.mutation({
             query: (credentials) => ({
@@ -23,6 +30,7 @@ export const task_api = createApi({
                 method: 'POST',
                 body: credentials,
             }),
+            invalidatesTags: ["Task"],
         }),
         DeleteTask: builder.mutation({
             query: (credentials) => ({
@@ -30,6 +38,7 @@ export const task_api = createApi({
                 method: 'POST',
                 body: credentials,
             }),
+            invalidatesTags: ["Task"],
         }),
         EditTask: builder.mutation({
             query: (credentials) => ({
@@ -37,8 +46,16 @@ export const task_api = createApi({
                 method: 'POST',
                 body: credentials,
             }),
-        })
+            invalidatesTags: ["Task"],
+        }),
+        Productivity: builder.query({
+            query: () => ({
+                url: 'task/productivity',
+                method: 'GET',
+            }),
+            providesTags: ["Task"],
+        }),
     }),
 })
 
-export const { useAddTaskMutation, useGetTaskQuery, useUpdateTaskMutation, useDeleteTaskMutation, useEditTaskMutation } = task_api;
+export const { useAddTaskMutation, useGetTaskQuery, useUpdateTaskMutation, useDeleteTaskMutation, useEditTaskMutation, useGetTaskHistoryQuery, useProductivityQuery } = task_api;
