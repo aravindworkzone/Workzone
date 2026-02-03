@@ -1,5 +1,5 @@
 import Header from "../components/Header";
-import Footer from "../components/footer";
+import Footer from "../components/Footer";
 import LeftSidebar from "../section/LeftBar";
 import RightSidebar from "../section/RightBar";
 import MainLayout from "../section/MainLay";
