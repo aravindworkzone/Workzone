@@ -119,7 +119,7 @@ const TaskPart = () => {
             onCurd={t.routine}
             onRemove={handleDelete}
             onEdit={handleEdit}
-            link={t.link == null ? false : true}
+            link={t.link != null && mode === 'Daily Routine' ? true : false}
             Routine={mode === 'Daily Routine' ? true : false}
           />) : (<p className="flex justify-center text-sm text-gray-600 dark:text-gray-400">No {mode}</p>)}
         </div>

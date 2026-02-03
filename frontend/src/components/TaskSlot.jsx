@@ -61,7 +61,25 @@ const TodayTasks = ({ id, description, completed, onToggle, onAction, onError, o
       </span>
     )}
 
-    {true && (
+    {!onCurd && (
+      <span
+        className="
+          shrink-0
+          bg-blue-600/30
+          text-blue-100
+          border border-blue-600/70
+          text-[10px]
+          px-2 py-[1px]
+          rounded-full
+          uppercase tracking-wider
+          pointer-events-none
+        "
+      >
+        Routine
+      </span>
+    )}
+
+    {link && (
       <span
         className="
           shrink-0

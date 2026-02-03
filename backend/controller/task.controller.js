@@ -158,14 +158,14 @@ exports.Productivity = async (req, res) => {
         }
       }
     ]);
-    res.status(200).send( Action[0].productivity );
+    res.status(200).send( Action[0]?.productivity ?? 0 );
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
   }
 }
 
-exports. = async (req, res) => {
+exports.GoalTask = async (req, res) => {
   try {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -200,9 +200,9 @@ exports. = async (req, res) => {
         type: 'Today Task',
         link: r._id,
         completed: false,
+        routine: false
       }));
 
-    // Insert only if missing
     if (missingTasks.length > 0) {
       await Task.insertMany(missingTasks);
     }

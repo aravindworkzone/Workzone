@@ -17,6 +17,7 @@ const AddTask = ({ UseCase, HandleAddTask, mode }) => {
     });
 
     taskInputRef.current.value = "";
+    setTaskType('');
   };
 
   return (
