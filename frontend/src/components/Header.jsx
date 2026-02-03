@@ -3,7 +3,7 @@ import logo from "../assets/main_logo.png";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCheckUserQuery, useLogoutUserMutation} from "../redux/api/auth";
-import { useProductivityQuery} from "../redux/api/task";
+import { useProductivityQuery,useGoalTaskMutation} from "../redux/api/task";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -27,6 +27,20 @@ const Header = () => {
       navigate("/login", { replace: true });
     }
   }, [data, isError, isLoading]);
+
+  const [GoalTask] = useGoalTaskMutation();
+
+  useEffect(() => {
+    const fetchGoalTask = async () => {
+      try {
+        await GoalTask();
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchGoalTask();
+  }, []);
 
   return (
     <header
@@ -54,7 +68,7 @@ const Header = () => {
       {/* CENTER – Productivity */}
       <div className="text-center">
         <p className="text-xs text-gray-500 dark:text-gray-400">
-          Productivity (7 days)
+          Productivity (last 7 days)
         </p>
         <p
           className={`text-lg font-semibold ${

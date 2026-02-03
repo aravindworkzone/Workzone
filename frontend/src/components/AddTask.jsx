@@ -1,21 +1,35 @@
-import { useRef } from "react";
-const AddTask = ({ UseCase, HandleAddTask }) => {
-  const taskInputRef = useRef(null);
+import { useRef, useState } from "react";
+import { useGetTaskQuery } from "../redux/api/task";
 
-  const HandleOnClick = () => {
-    console.log('value');
-    const value = taskInputRef.current.value;
+const AddTask = ({ UseCase, HandleAddTask, mode }) => {
+  const taskInputRef = useRef(null);
+  const [taskType, setTaskType] = useState('');
+  const { data: year } = useGetTaskQuery('Yearly Goal');
+
+  const handleSubmit = () => {
+    const value = taskInputRef.current?.value.trim();
     if (!value) return;
-    HandleAddTask(value);
+
+    HandleAddTask({
+      description: value,
+      mode: mode,
+      link: taskType,
+    });
+
     taskInputRef.current.value = "";
   };
 
   return (
-    <form className="
-      bg-white dark:bg-gray-800
-      p-4 rounded-lg shadow
-      mb-4
-    "  onSubmit={(e) => {e.preventDefault();HandleOnClick();}}
+    <form
+      className="
+        bg-white dark:bg-gray-800
+        p-4 rounded-lg shadow
+        mb-4
+      "
+      onSubmit={(e) => {
+        e.preventDefault();
+        handleSubmit();
+      }}
     >
       <h2 className="font-semibold mb-3 text-gray-900 dark:text-gray-100">
         {UseCase}
@@ -34,12 +48,41 @@ const AddTask = ({ UseCase, HandleAddTask }) => {
             border-gray-300 dark:border-gray-700
             focus:outline-none focus:ring-2 focus:ring-blue-500
           "
+          maxLength={100}
         />
-        <button type="submit" className="
-          bg-blue-600 hover:bg-blue-700
-          text-white
-          px-4 py-2 rounded cursor-pointer
-        ">
+
+        {mode == "Daily Routine" && (
+          <select
+            value={taskType}
+            onChange={(e) => setTaskType(e.target.value)}
+            className="
+              px-3 py-2 rounded
+              border bg-white dark:bg-gray-900
+              text-gray-900 dark:text-gray-100
+              border-gray-300 dark:border-gray-700
+              max-w-[200px]
+            "
+          >
+            <option value="" disabled>
+              Link Yearly Goal
+            </option>
+
+            {year.map(e => (
+              <option key={e.id} value={e.id}>
+                {e.description}
+              </option>
+            ))}
+          </select>
+        )}
+
+        <button
+          mode="submit"
+          className="
+            bg-blue-600 hover:bg-blue-700
+            text-white
+            px-4 py-2 rounded cursor-pointer
+          "
+        >
           Add
         </button>
       </div>

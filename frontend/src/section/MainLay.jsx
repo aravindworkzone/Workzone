@@ -86,7 +86,7 @@ const TaskPart = () => {
   const [addTask] = useAddTaskMutation();
   const HandleAddTask = async (input) => {
     try{
-          const task = { description: input, type: mode };
+      const task = { data: input};
       const result = await addTask(task);
       if (result) {
         console.log(result);
@@ -98,7 +98,7 @@ const TaskPart = () => {
 
   return (
     <main className="flex-1 p-4 sm:p-6 overflow-y-auto">
-      <AddTask UseCase={`Add ${mode.split(' ')[1]}`} HandleAddTask={HandleAddTask} />
+      <AddTask UseCase={`Add ${mode.split(' ')[1]}`} HandleAddTask={HandleAddTask} mode={mode}/>
       <div className="
         bg-white dark:bg-gray-800
         p-4 rounded-lg shadow
@@ -119,6 +119,8 @@ const TaskPart = () => {
             onCurd={t.routine}
             onRemove={handleDelete}
             onEdit={handleEdit}
+            link={t.link == null ? false : true}
+            Routine={mode === 'Daily Routine' ? true : false}
           />) : (<p className="flex justify-center text-sm text-gray-600 dark:text-gray-400">No {mode}</p>)}
         </div>
       </div>

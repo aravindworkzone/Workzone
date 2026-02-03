@@ -17,7 +17,7 @@ const ListTask = ({ head, body = [], onEdit }) => {
       {body.length > 0 ? (
         <ul className="list-disc ml-4 space-y-1 text-sm text-gray-600 dark:text-gray-400">
           {body.map((item) => (
-            <li key={item.id}>{item.description}</li>
+            <li key={item.id} className="truncate">{item.description}</li>
           ))}
         </ul>
       ) : (

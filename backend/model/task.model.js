@@ -7,6 +7,7 @@ const taskSchema = new mongoose.Schema({
     deleted: { type: Boolean, required: true, default: false },
     type: { type: String, enum: ['Today Task','Yearly Goal','Daily Routine'], required: false },
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'UserAuth', required: true },
+    link: { type: mongoose.Schema.Types.ObjectId },
 }, { timestamps: true });
 
 

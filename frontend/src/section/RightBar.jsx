@@ -5,9 +5,9 @@ import {setMode} from "../redux/slice/mode";
 import {setDeviceType} from "../redux/slice/deviceType";
 const RightSidebar = () => {
   const dispatch = useDispatch();
-  const { data: goal } = useGetTaskQuery('Yearly Goal');
-  const { data: routine } = useGetTaskQuery('Daily Routine');
   const { data: today } = useGetTaskQuery('Today Task');
+  const { data: routine } = useGetTaskQuery('Daily Routine');
+  const { data: year } = useGetTaskQuery('Yearly Goal');
 
   const handleToggleEvent = (value) => {
     dispatch(setMode(value));
@@ -29,7 +29,7 @@ const RightSidebar = () => {
       p-4 space-y-4
       text-gray-900 dark:text-gray-100
     ">
-      <ListTask head="🎯 Yearly Goal" body={goal} onEdit={openYearlyGoal}/>
+      <ListTask head="🎯 Yearly Goal" body={year} onEdit={openYearlyGoal}/>
 
       <ListTask head="📆 Daily Routine" body={routine} onEdit={openDailyRoutine} />
 
