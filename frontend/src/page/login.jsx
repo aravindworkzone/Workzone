@@ -124,7 +124,7 @@ const loginModal = () => {
               )}
               {isError && (
                 <p className="text-xs text-red-500 mt-1">
-                  {error || "Login failed"}
+                  {error.data.message}
                 </p>
               )}
               {/* <button className="text-blue-600 dark:text-blue-400 text-[11px] cursor-pointer hover:underline">Forget Password?</button> */}
