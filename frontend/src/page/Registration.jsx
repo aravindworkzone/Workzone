@@ -175,11 +175,6 @@ const Register = () => {
                   {errors.confirmPassword.message}
                 </p>
               )}
-              {userExist && (
-                <p className="text-xs text-red-500 mt-1">
-                  {userExist}
-                </p>
-              )}
             </div>
 
             {/* BUTTON */}
