@@ -1,0 +1,302 @@
+const Task = require("../model/task.model");
+const Routine = require("../model/routine.model");
+const YearlyGoal = require("../model/yearly.model");
+const User = require("../model/user.model");
+const manogoose = require('mongoose');
+
+exports.AddTask = async (req, res) => {
+  try {
+    const { description, mode, link } = req.body;
+
+    if (!description || description.length > 100) {
+      return res.status(400).json({ message: "Description is required" });
+    }
+
+    if (!mode) {
+      return res.status(400).json({ message: "Mode is required" });
+    }
+
+    const baseData = {
+      description,
+      user: req.user.id,
+    };
+
+    switch (mode) {
+      case "Today Task":
+        await Task.create(baseData);
+        break;
+
+      case "Yearly Goal":
+        await YearlyGoal.create(baseData);
+        break;
+
+      case "Daily Routine":
+        await Routine.create({
+          ...baseData,
+          link: link || null,
+          yearly: link == null ? true : false
+        });
+        break;
+
+      default:
+        return res.status(400).json({ message: "Invalid mode" });
+    }
+
+    res.status(201).json({ message: "Task added successfully", baseData });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+}
+
+
+exports.GetTasks = async (req, res) => {
+  try {
+    const { type } = req.query;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    let Search = {user: req.user.id, deleted: false};
+    let Module = Task;
+    let Require = "_id description completed routine link";
+
+    switch (type) {
+      case 'Today Task':
+        Search.createdAt = {$gte: today};
+        break;
+
+      case 'Daily Routine':
+        Module = Routine;
+        Require = "_id description yearly link"
+        break;
+
+      case 'Yearly Goal':
+        Module = YearlyGoal;
+        Require = "_id description completed"
+        break;
+    
+      default:
+        res.status(400).json({ message: "Invalid type" });
+    }
+
+    let task = await Module.find(Search).select(Require).lean();
+
+    if(type == 'Today Task'){
+      const yearGoal = await Routine.find({yearly: true, deleted: false}).select('_id').lean();
+      const YearSet = new Set(yearGoal.map(t => t._id.toString()));
+      task = task.map(t => ({
+        ...t,
+        yearly: t.link && YearSet.has(t.link.toString())
+      }));
+    }
+
+    res.status(200).json(task);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+exports.GetTaskHistory = async (req, res) => {
+  try {
+    const EndDate = new Date();
+    EndDate.setHours(0, 0, 0, 0);
+    const startDate = new Date(EndDate);
+    startDate.setDate(startDate.getDate() - 30);
+    startDate.setHours(0, 0, 0, 0);
+
+    const taskHistory = await Task.aggregate([
+      {
+        $match:{
+          user: new manogoose.Types.ObjectId(req.user.id),
+          createdAt: {$gte: startDate, $lte: EndDate},
+          deleted: false,
+          type: 'Today Task'
+        }
+      },
+      {
+        $group:{
+          _id: {$dateToString: {format: "%b %d %Y", date: "$createdAt"}},
+          totalTasks: {$sum: 1},
+          completedTasks: {$sum: {$cond: [{$eq: ["$completed", true]}, 1, 0]}}
+        }
+      },
+      {$sort: {_id: -1}}
+    ]);
+
+    const joinDate = (await User.findById(req.user.id, { createdAt: 1 })).createdAt.toDateString().split(' ').slice(1).join(' ');
+
+    res.status(200).json({joinDate, data: taskHistory });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+exports.UpdateTask = async (req, res) => {
+  try {
+    const { id, type } = req.body;
+    const Module = {
+      "Today Task": Task,
+      "Daily Routine": Routine,
+      "Yearly Goal": YearlyGoal
+    }
+
+    const task = await Module[type].findById(id);
+    if (!task) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+    task.completed = !task.completed;
+    await task.save();
+    res.status(200).json({ message: "Task updated successfully" });
+    console.log(id);
+  } catch(error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+}
+
+exports.DeleteTask = async (req, res) => {
+  try{
+    const { id, type } = req.body;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const Module = {
+      "Today Task": Task,
+      "Daily Routine": Routine,
+      "Yearly Goal": YearlyGoal
+    }
+    const task = await Module[type].findById(id);
+    if (!task) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+    task.deleted = true;
+    await task.save();
+    if(type == 'Daily Routine'){
+      await Task.updateOne({link: id, createdAt: { $gte: today }},{$set: {deleted: true}});
+    }
+    res.status(200).json({ message: "Task deleted successfully" });
+  }catch(e){
+    console.error(e);
+    res.status(500).json({ message: "Server error" });
+  }
+}
+
+exports.EditTask = async (req, res) => {
+  const { id, description, type } = req.body;
+  if (!description || description.length > 100) {
+    return res.status(400).json({ message: "Description is required" });
+  }
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const Module = {
+    "Today Task": Task,
+    "Daily Routine": Routine,
+    "Yearly Goal": YearlyGoal
+  }
+  const task = await Module[type].findById(id);
+  if (!task) {
+    return res.status(404).json({ message: "Task not found" });
+  }
+  task.description = description;
+  await task.save();
+  if(type == 'Daily Routine'){
+    await Task.updateOne({link: id, createdAt: { $gte: today }},{$set: {description}});
+  }
+  res.status(200).json({ message: "Task updated successfully" });
+}
+
+exports.Productivity = async (req, res) => {
+  try {
+    const EndDate = new Date();
+    EndDate.setHours(0, 0, 0, 0);
+    const startDate = new Date(EndDate);
+    startDate.setDate(startDate.getDate() - 7);
+    const Action = await Task.aggregate([
+      {
+        $match:{
+          user: new manogoose.Types.ObjectId(req.user.id),
+          createdAt: {$gte: startDate, $lte: EndDate},
+          deleted: false,
+          type: 'Today Task'
+        }
+      },
+      {
+        $group:{
+          _id: null,
+          totalTasks: {$sum: 1},
+          completedTasks: {$sum: {$cond: [{$eq: ["$completed", true]}, 1, 0]}}
+        }
+      },
+      {
+        $addFields:{
+          productivity:{
+            $multiply:[
+              {$divide: ["$completedTasks", "$totalTasks"]},100
+            ]
+          }
+        }
+      }
+    ]);
+    res.status(200).send( Action[0]?.productivity ?? 0 );
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+}
+
+exports.GoalTask = async (req, res) => {
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const todayTasks = await Task.find(
+      {
+        user: req.user.id,
+        deleted: false,
+        createdAt: { $gte: today }
+      },
+      { link: 1 }
+    );
+
+    const routines = await Routine.find(
+      {
+        user: req.user.id,
+        deleted: false,
+      }
+    );
+
+    const yearly = await YearlyGoal.find(
+      {
+        user: req.user.id,
+        deleted: false,
+      }
+    ).select('_id');
+
+    const linkedRoutineIds = todayTasks
+      .filter(t => t.link)
+      .map(t => t.link.toString());
+
+    const missingTasks = routines
+      .filter(r => !linkedRoutineIds.includes(r._id.toString()))
+      .map(r => ({
+        description: r.description,
+        user: req.user.id,
+        link: r._id,
+        completed: false,
+        routine: true
+      }));
+
+    if (missingTasks.length > 0) {
+      await Task.insertMany(missingTasks);
+    }
+
+    res.status(200).json({
+      message: 'Goal tasks ensured',
+      inserted: missingTasks.length,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
