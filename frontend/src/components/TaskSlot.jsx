@@ -2,7 +2,7 @@ import { Pencil,Trash,CheckCircle  } from "lucide-react";
 const TodayTasks = ({ id, description, completed, onToggle, onAction, onError, onCurd, onRemove, onEdit, Routine, yearly }) => {
   const handleToggle = (id) => onToggle?.(id);
 
-  let color = completed ? "bg-green-600/40 border-green-700" : "bg-amber-600/40 border-amber-700";
+  let color = completed == 'Completed' ? "bg-green-600/40 border-green-700" : "bg-amber-600/40 border-amber-700";
 
   let updateSpan = description;
   switch (onAction) {
@@ -36,7 +36,7 @@ const TodayTasks = ({ id, description, completed, onToggle, onAction, onError, o
   <input
     type="checkbox"
     className="hidden"
-    checked={completed}
+    checked={completed == 'Completed'}
     onChange={() => handleToggle(id)}
     disabled={onAction !== ''}
   />
@@ -104,7 +104,7 @@ const TodayTasks = ({ id, description, completed, onToggle, onAction, onError, o
     </span>
   )}
 
-  {(!onCurd && !completed && !onAction) && (
+  {(!onCurd && (completed == 'Pending' || completed == false) && !onAction) && (
     <div
       className="flex items-center gap-5 shrink-0"
       onClick={(e) => e.preventDefault()}

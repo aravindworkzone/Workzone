@@ -21,7 +21,7 @@ const loginModal = () => {
 
   const navigate = useNavigate();
 
-  const [loginUser, {isError, error}] = useLoginUserMutation();
+  const [loginUser, {isError, error, isLoading}] = useLoginUserMutation();
 
   const onSubmit = async (e) => {
     const result = await loginUser(e).unwrap();
@@ -133,16 +133,44 @@ const loginModal = () => {
             {/* BUTTON */}
             <button
               type="submit"
+              disabled={isLoading}
               className="
                 w-full mt-2
+                flex items-center justify-center gap-3
                 bg-blue-600 hover:bg-blue-700
                 dark:bg-blue-500 dark:hover:bg-blue-600
                 text-white py-3 rounded-xl
-                font-semibold transition cursor-pointer
+                font-semibold transition
+                disabled:opacity-60 disabled:cursor-not-allowed
               "
             >
-              Login
+              {isLoading ? (
+                <>
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 50 50"
+                    className="animate-spin"
+                  >
+                    <circle
+                      cx="25"
+                      cy="25"
+                      r="20"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                      strokeLinecap="round"
+                      strokeDasharray="90"
+                      strokeDashoffset="60"
+                    />
+                  </svg>
+                  Logging in...
+                </>
+              ) : (
+                "Login"
+              )}
             </button>
+
           </form>
 
           <p className="text-sm text-gray-500 dark:text-gray-400 text-center mt-8">

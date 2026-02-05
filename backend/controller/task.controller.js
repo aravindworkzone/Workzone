@@ -9,7 +9,7 @@ exports.AddTask = async (req, res) => {
     const { description, mode, link } = req.body;
 
     if (!description || description.length > 100) {
-      return res.status(400).json({ message: "Description is required" });
+      return res.status(400).json({ message: "Invalid Description" });
     }
 
     if (!mode) {
@@ -111,14 +111,13 @@ exports.GetTaskHistory = async (req, res) => {
           user: new manogoose.Types.ObjectId(req.user.id),
           createdAt: {$gte: startDate, $lte: EndDate},
           deleted: false,
-          type: 'Today Task'
         }
       },
       {
         $group:{
           _id: {$dateToString: {format: "%b %d %Y", date: "$createdAt"}},
           totalTasks: {$sum: 1},
-          completedTasks: {$sum: {$cond: [{$eq: ["$completed", true]}, 1, 0]}}
+          completedTasks: {$sum: {$cond: [{$eq: ["$completed", 'Completed']}, 1, 0]}}
         }
       },
       {$sort: {_id: -1}}
@@ -146,7 +145,7 @@ exports.UpdateTask = async (req, res) => {
     if (!task) {
       return res.status(404).json({ message: "Task not found" });
     }
-    task.completed = !task.completed;
+    task.completed = task.completed == 'Pending' ? 'Completed' : 'Pending';
     await task.save();
     res.status(200).json({ message: "Task updated successfully" });
     console.log(id);
@@ -218,14 +217,13 @@ exports.Productivity = async (req, res) => {
           user: new manogoose.Types.ObjectId(req.user.id),
           createdAt: {$gte: startDate, $lte: EndDate},
           deleted: false,
-          type: 'Today Task'
         }
       },
       {
         $group:{
           _id: null,
           totalTasks: {$sum: 1},
-          completedTasks: {$sum: {$cond: [{$eq: ["$completed", true]}, 1, 0]}}
+          completedTasks: {$sum: {$cond: [{$eq: ["$completed", 'Completed']}, 1, 0]}}
         }
       },
       {
@@ -283,7 +281,7 @@ exports.GoalTask = async (req, res) => {
         description: r.description,
         user: req.user.id,
         link: r._id,
-        completed: false,
+        completed: 'Pending',
         routine: true
       }));
 

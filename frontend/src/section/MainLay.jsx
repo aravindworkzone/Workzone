@@ -2,12 +2,13 @@ import AddTask from "../components/AddTask";
 import TaskSlot from "../components/TaskSlot";
 import { useState } from "react";
 import { useSelector } from "react-redux";
+import MainSkeleton from "../components/Loader/mainSkeleton";
 import { useGetTaskQuery, useUpdateTaskMutation, useDeleteTaskMutation, useEditTaskMutation, useAddTaskMutation, useGoalTaskMutation } from '../redux/api/task';
 
 const TaskPart = () => {
 
   const mode = useSelector(state => state.mode.mode);
-  const { data: tasks = [], isLoading } = useGetTaskQuery(mode);
+  const { data: tasks = [], isLoading: queryLoading } = useGetTaskQuery(mode);
 
   const [taskLoading, setTaskLoading] = useState({});
   const [taskError, setTaskError] = useState([]);
@@ -83,12 +84,13 @@ const TaskPart = () => {
     }
   }
 
-  const [addTask] = useAddTaskMutation();
-  const [GoalTask, isError] = useGoalTaskMutation();
+  const [addTask, { isLoading: addTaskLoading,error: addTaskError, isError: addTaskIsError }] = useAddTaskMutation();
+  const [GoalTask] = useGoalTaskMutation();
   const HandleAddTask = async (input) => {
     try{
       const task = { description: input.description, mode: input.mode, link: input.link };
       const result = await addTask(task);
+      console.log(addTaskError.data.message);
       if (result) {
         await GoalTask();
       }
@@ -98,8 +100,10 @@ const TaskPart = () => {
   }
 
   return (
-    <main className="flex-1 p-4 sm:p-6 overflow-y-auto">
-      <AddTask UseCase={`Add ${mode.split(' ')[1]}`} HandleAddTask={HandleAddTask} mode={mode} isError={isError}/>
+    <>
+    {
+      queryLoading ? <MainSkeleton /> : (<main className="flex-1 p-4 sm:p-6 overflow-y-auto">
+      <AddTask UseCase={`Add ${mode.split(' ')[1]}`} HandleAddTask={HandleAddTask} mode={mode} isError={addTaskIsError} error={addTaskError} isLoading={addTaskLoading} />
       <div className="
         bg-white dark:bg-gray-800
         p-4 rounded-lg shadow
@@ -125,7 +129,9 @@ const TaskPart = () => {
           />) : (<p className="flex justify-center text-sm text-gray-600 dark:text-gray-400">No {mode}</p>)}
         </div>
       </div>
-    </main>
+    </main>)
+    }
+    </>
   );
 };
 

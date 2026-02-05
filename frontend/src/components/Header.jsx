@@ -4,10 +4,11 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCheckUserQuery, useLogoutUserMutation} from "../redux/api/auth";
 import { useProductivityQuery,useGoalTaskMutation} from "../redux/api/task";
+import HeadSkeleton from "./Loader/HeadSkeleton";
 
 const Header = () => {
   const navigate = useNavigate();
-  const { data: productivity = 0 } = useProductivityQuery();
+  const { data: productivity = 0, isLoading: productivityLoading } = useProductivityQuery();
   
   const [logoutUser] = useLogoutUserMutation();
   const handleLogout = async () => {
@@ -43,7 +44,9 @@ const Header = () => {
   }, []);
 
   return (
-    <header
+    <>
+    {
+      isLoading && productivityLoading ? <HeadSkeleton/> : (<header
       className="
         h-16
         px-4 sm:px-6
@@ -53,7 +56,6 @@ const Header = () => {
         text-gray-900 dark:text-gray-100
       "
     >
-      {/* LEFT – Logo */}
       <div className="flex items-center gap-2">
         <img
           src={logo}
@@ -65,7 +67,6 @@ const Header = () => {
         </span>
       </div>
 
-      {/* CENTER – Productivity */}
       <div className="text-center">
         <p className="text-xs text-gray-500 dark:text-gray-400">
           Productivity (last 7 days)
@@ -81,7 +82,6 @@ const Header = () => {
         </p>
       </div>
 
-      {/* RIGHT – User & Date */}
       <div className="text-right">
         <div className="flex items-center justify-end gap-3">
           <LogOut onClick={handleLogout} className="inline-block h-6 w-6 mr-2 cursor-pointer text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
@@ -97,7 +97,9 @@ const Header = () => {
           </div>
         </div>
       </div>
-    </header>
+    </header>)
+    }
+    </>
   );
 };
 
