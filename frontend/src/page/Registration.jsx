@@ -20,7 +20,7 @@ const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
-  const [registerUser, {isError, error}] = useRegisterUserMutation();
+  const [registerUser, {isError, error, isLoading}] = useRegisterUserMutation();
 
   const onSubmit = async(e) => {
     const result = await registerUser(e).unwrap();
@@ -180,15 +180,43 @@ const Register = () => {
             {/* BUTTON */}
             <button
               type="submit"
+              disabled={isLoading}
               className="
                 w-full mt-2
                 bg-blue-600 hover:bg-blue-700
                 dark:bg-blue-500 dark:hover:bg-blue-600
                 text-white py-3 rounded-xl
                 font-semibold transition cursor-pointer
+                disabled:opacity-60
+                disabled:cursor-not-allowed
+                flex items-center justify-center gap-3
               "
             >
-              Create account
+              {isLoading ? (
+                <>
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 50 50"
+                    className="animate-spin"
+                  >
+                    <circle
+                      cx="25"
+                      cy="25"
+                      r="20"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                      strokeLinecap="round"
+                      strokeDasharray="90"
+                      strokeDashoffset="60"
+                    />
+                  </svg>
+                  Creating account ...
+                </>
+              ) : (
+                "Create account"
+              )}
             </button>
           </form>
 

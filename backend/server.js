@@ -11,8 +11,7 @@ connectDB();
 
 app.use(cors({
     origin: [
-      'http://localhost:3000',
-      'https://remarkable-florentine-098b4f.netlify.app'
+      'http://localhost:3000'
     ],
     credentials: true,
 }));

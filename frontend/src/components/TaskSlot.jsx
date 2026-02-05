@@ -1,8 +1,8 @@
 import { Pencil,Trash,CheckCircle  } from "lucide-react";
-const TodayTasks = ({ id, description, completed, onToggle, onAction, onError, onCurd, onRemove, onEdit, Routine, link }) => {
+const TodayTasks = ({ id, description, completed, onToggle, onAction, onError, onCurd, onRemove, onEdit, Routine, yearly }) => {
   const handleToggle = (id) => onToggle?.(id);
 
-  let color = completed ? "bg-green-600/40 border-green-700" : "bg-amber-600/40 border-amber-700";
+  let color = completed == 'Completed' ? "bg-green-600/40 border-green-700" : "bg-amber-600/40 border-amber-700";
 
   let updateSpan = description;
   switch (onAction) {
@@ -33,16 +33,14 @@ const TodayTasks = ({ id, description, completed, onToggle, onAction, onError, o
 <label
   className={`flex items-center gap-3 w-full p-3 rounded border cursor-pointer ${color}`}
 >
-  {/* Checkbox */}
   <input
     type="checkbox"
     className="hidden"
-    checked={completed}
+    checked={completed == 'Completed'}
     onChange={() => handleToggle(id)}
     disabled={onAction !== ''}
   />
 
-  {/* Text + Goal */}
   <div className="flex items-center gap-4 flex-1 min-w-0">
     {onAction === 'edit' ? (
       <input
@@ -61,7 +59,7 @@ const TodayTasks = ({ id, description, completed, onToggle, onAction, onError, o
       </span>
     )}
 
-    {!onCurd && (
+    {onCurd && (
       <span
         className="
           shrink-0
@@ -79,7 +77,7 @@ const TodayTasks = ({ id, description, completed, onToggle, onAction, onError, o
       </span>
     )}
 
-    {link && (
+    {yearly && (
       <span
         className="
           shrink-0
@@ -98,7 +96,6 @@ const TodayTasks = ({ id, description, completed, onToggle, onAction, onError, o
     )}
   </div>
 
-  {/* Loading dots */}
   {(onAction && onAction !== 'edit') && (
     <span className="inline-flex gap-1 shrink-0">
       <span className="w-1 h-1 rounded-full bg-black dark:bg-white animate-pulse"></span>
@@ -107,8 +104,7 @@ const TodayTasks = ({ id, description, completed, onToggle, onAction, onError, o
     </span>
   )}
 
-  {/* Actions */}
-  {(onCurd && !completed && !onAction) && (
+  {(!onCurd && (completed == 'Pending' || completed == false) && !onAction) && (
     <div
       className="flex items-center gap-5 shrink-0"
       onClick={(e) => e.preventDefault()}
@@ -133,7 +129,6 @@ const TodayTasks = ({ id, description, completed, onToggle, onAction, onError, o
     </div>
   )}
 
-  {/* Confirm edit */}
   {onAction === 'edit' && (
     <CheckCircle
       className="text-white/70 hover:text-white transition w-4 h-4 shrink-0"

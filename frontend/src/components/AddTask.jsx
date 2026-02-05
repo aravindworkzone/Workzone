@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { useGetTaskQuery } from "../redux/api/task";
 
-const AddTask = ({ UseCase, HandleAddTask, mode }) => {
+const AddTask = ({ UseCase, HandleAddTask, mode, isError, error ,isLoading }) => {
   const taskInputRef = useRef(null);
   const [taskType, setTaskType] = useState('');
   const { data: year } = useGetTaskQuery('Yearly Goal');
@@ -37,20 +37,20 @@ const AddTask = ({ UseCase, HandleAddTask, mode }) => {
       </h2>
 
       <div className="flex flex-col sm:flex-row gap-2">
-        <input
-          ref={taskInputRef}
-          type="text"
-          placeholder="Enter task..."
-          className="
-            flex-1 px-3 py-2 rounded
-            border
-            bg-white dark:bg-gray-900
-            text-gray-900 dark:text-gray-100
-            border-gray-300 dark:border-gray-700
-            focus:outline-none focus:ring-2 focus:ring-blue-500
-          "
-          maxLength={100}
-        />
+          <input
+            ref={taskInputRef}
+            type="text"
+            placeholder="Enter task..."
+            className="
+              flex-1 px-3 py-2 rounded
+              border
+              bg-white dark:bg-gray-900
+              text-gray-900 dark:text-gray-100
+              border-gray-300 dark:border-gray-700
+              focus:outline-none focus:ring-2 focus:ring-blue-500
+            "
+            maxLength={100}
+          />
 
         {mode == "Daily Routine" && (
           <select
@@ -69,7 +69,7 @@ const AddTask = ({ UseCase, HandleAddTask, mode }) => {
             </option>
 
             {year.map(e => (
-              <option key={e.id} value={e.id}>
+              <option key={e._id} value={e._id}>
                 {e.description}
               </option>
             ))}
@@ -77,16 +77,54 @@ const AddTask = ({ UseCase, HandleAddTask, mode }) => {
         )}
 
         <button
-          mode="submit"
+          type="submit"
+          disabled={isLoading}
           className="
             bg-blue-600 hover:bg-blue-700
             text-white
             px-4 py-2 rounded cursor-pointer
+            transition-colors
+            disabled:opacity-50
+            disabled:cursor-not-allowed
+            disabled:px-5
+            hover:border-blue-500 hover:dark:border-blue-400
+            flex items-center justify-center
           "
         >
-          Add
+          {isLoading ? (
+            <>
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 50 50"
+                className="animate-spin"
+              >
+                <circle
+                  cx="25"
+                  cy="25"
+                  r="20"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                  strokeLinecap="round"
+                  strokeDasharray="90"
+                  strokeDashoffset="60"
+                />
+              </svg>
+            </>
+          ) : (
+            "Add"
+          )}
+          
         </button>
       </div>
+      {
+        isError && (
+          <span className="text-sm text-red-600 dark:text-red-400 mt-2 ml-2">
+            {error.data.message}
+          </span>
+        )
+      }
     </form>
   );
 };

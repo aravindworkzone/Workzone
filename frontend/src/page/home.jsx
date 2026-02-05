@@ -6,6 +6,7 @@ import MainLayout from "../section/MainLay";
 import { useSelector, useDispatch } from "react-redux";
 import { setDeviceType } from "../redux/slice/deviceType";
 import { useEffect } from "react";
+// import HomeSkeleton from "../components/homeSkeleton";
 
 
 const Home = () => {
@@ -47,6 +48,9 @@ const Home = () => {
 
 
   return (
+    <>
+    {/* <HomeSkeleton /> */}
+
     <div className="h-screen flex flex-col bg-gray-100 dark:bg-gray-950">
       <Header />
 
@@ -56,6 +60,7 @@ const Home = () => {
 
       <Footer appstatus={appstatus} OnToggle={handleToogle} />
     </div>
+    </>
   );
 };
 

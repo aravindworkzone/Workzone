@@ -3,11 +3,13 @@ import { useGetTaskQuery } from "../redux/api/task";
 import { useDispatch } from "react-redux";
 import {setMode} from "../redux/slice/mode";
 import {setDeviceType} from "../redux/slice/deviceType";
+import RightSkeleton from "../components/Loader/RightSkeleton";
+
 const RightSidebar = () => {
   const dispatch = useDispatch();
-  const { data: today } = useGetTaskQuery('Today Task');
-  const { data: routine } = useGetTaskQuery('Daily Routine');
-  const { data: year } = useGetTaskQuery('Yearly Goal');
+  const { data: today, isLoading } = useGetTaskQuery('Today Task');
+  const { data: routine, isLoading: routineLoading } = useGetTaskQuery('Daily Routine');
+  const { data: year, isLoading: yearLoading } = useGetTaskQuery('Yearly Goal');
 
   const handleToggleEvent = (value) => {
     dispatch(setMode(value));
@@ -22,6 +24,8 @@ const RightSidebar = () => {
   const openTodayTask = () => handleToggleEvent("Today Task");
 
   return (
+    <>
+    {isLoading && routineLoading && yearLoading ? <RightSkeleton /> : (
     <aside className="
       w-full lg:w-64
       lg:border-l
@@ -29,12 +33,15 @@ const RightSidebar = () => {
       p-4 space-y-4
       text-gray-900 dark:text-gray-100
     ">
-      <ListTask head="🎯 Yearly Goal" body={year} onEdit={openYearlyGoal}/>
+      <ListTask head="Yearly Goal" body={year} onEdit={openYearlyGoal}/>
 
-      <ListTask head="📆 Daily Routine" body={routine} onEdit={openDailyRoutine} />
+      <ListTask head="Daily Routine" body={routine} onEdit={openDailyRoutine} />
 
-      <ListTask head="📆 Today Task" body={today} onEdit={openTodayTask} />
+      <ListTask head="Today Task" body={today} onEdit={openTodayTask} />
     </aside>
+    )
+  }
+  </>
   );
 };
 
