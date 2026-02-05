@@ -90,7 +90,6 @@ const TaskPart = () => {
     try{
       const task = { description: input.description, mode: input.mode, link: input.link };
       const result = await addTask(task);
-      console.log(addTaskError.data.message);
       if (result) {
         await GoalTask();
       }
