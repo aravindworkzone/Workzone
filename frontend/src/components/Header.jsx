@@ -5,12 +5,13 @@ import { useNavigate } from "react-router-dom";
 import { useCheckUserQuery, useLogoutUserMutation} from "../redux/api/auth";
 import { useProductivityQuery,useGoalTaskMutation} from "../redux/api/task";
 import HeadSkeleton from "./Loader/HeadSkeleton";
+import LoginSkeleton from "./Loader/loginSkeleton";
 
 const Header = () => {
   const navigate = useNavigate();
   const { data: productivity = 0, isLoading: productivityLoading } = useProductivityQuery();
   
-  const [logoutUser] = useLogoutUserMutation();
+  const [logoutUser, { isLoading: logoutLoading }] = useLogoutUserMutation();
   const handleLogout = async () => {
     try {
       const result = await logoutUser().unwrap();
@@ -45,8 +46,7 @@ const Header = () => {
 
   return (
     <>
-    {
-      isLoading && productivityLoading ? <HeadSkeleton/> : (<header
+    { isLoading && productivityLoading ? <HeadSkeleton/> : ( logoutLoading ? <LoginSkeleton/> :(<header
       className="
         h-16
         px-4 sm:px-6
@@ -97,7 +97,7 @@ const Header = () => {
           </div>
         </div>
       </div>
-    </header>)
+    </header>))
     }
     </>
   );
