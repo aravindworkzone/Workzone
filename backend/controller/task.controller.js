@@ -34,7 +34,7 @@ exports.AddTask = async (req, res) => {
         await Routine.create({
           ...baseData,
           link: link || null,
-          yearly: link == null ? false : true
+          yearly: link == "" ? false : true
         });
         break;
 
