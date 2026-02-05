@@ -2,7 +2,7 @@ import AddTask from "../components/AddTask";
 import TaskSlot from "../components/TaskSlot";
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import MainSkeleton from "../components/Loader/mainSkeleton";
+import MainSkeleton from "../components/Loader/MainSkeleton";
 import { useGetTaskQuery, useUpdateTaskMutation, useDeleteTaskMutation, useEditTaskMutation, useAddTaskMutation, useGoalTaskMutation } from '../redux/api/task';
 
 const TaskPart = () => {
