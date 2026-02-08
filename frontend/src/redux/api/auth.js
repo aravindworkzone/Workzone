@@ -34,7 +34,14 @@ export const auth_api = BaseApi.injectEndpoints({
             }),
             providesTags: ['Auth'],
         }),
+        verifyEmail: builder.query({
+            query: (token) => ({
+                url: `auth/verifyemail?token=${token}`,
+                method: 'GET',
+            }),
+            providesTags: ['Auth'],
+        })
     }),
 })
 
-export const { useLoginUserMutation, useLogoutUserMutation, useRegisterUserMutation, useCheckUserQuery } = auth_api;
+export const { useLoginUserMutation, useLogoutUserMutation, useRegisterUserMutation, useCheckUserQuery, useVerifyEmailQuery } = auth_api;

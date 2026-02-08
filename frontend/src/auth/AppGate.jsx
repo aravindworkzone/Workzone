@@ -5,7 +5,7 @@ import { useLocation } from "react-router-dom";
 const AppGate = ({ children }) => {
     const loaction = useLocation();
     const { isLoading, isError } = useCheckUserQuery();
-    const isPublic = ['/login', '/register'].includes(loaction.pathname);
+    const isPublic = ['/login', '/register', '/verifyemail'].includes(loaction.pathname);
     if(isPublic) return children;
 
     if(isLoading) return <LoginSkeleton />;

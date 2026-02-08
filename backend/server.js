@@ -10,9 +10,7 @@ const app = express();
 connectDB();
 
 app.use(cors({
-    origin: [
-      'https://remarkable-florentine-098b4f.netlify.app'
-    ],
+    origin: process.env.CORS_ORIGIN,
     credentials: true,
 }));
 
@@ -26,7 +24,7 @@ app.get('/', (req, res) => {
   res.send('Hello, World!');
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT;
 app.listen(PORT,"0.0.0.0", () => {
   console.log(`Server is running on port ${PORT}`);
 });
