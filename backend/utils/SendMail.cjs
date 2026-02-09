@@ -1,19 +1,13 @@
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 const dotenv = require("dotenv");
 
 dotenv.config();
 
-const Transport = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
+const resend = new Resend('re_YqyodMpc_Jp2rpL54Q8xXnNz2CVkygUEx');
 
 const sendEmail = async ({ to, subject, html }) => {
-  await Transport.sendMail({
-    from: `"Todo App" <${process.env.EMAIL_USER}>`,
+  await resend.emails.send({
+    from: "Todo App <onboarding@resend.dev>",
     to,
     subject,
     html,

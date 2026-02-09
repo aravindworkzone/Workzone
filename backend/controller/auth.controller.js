@@ -15,9 +15,9 @@ exports.register = async (req, res) => {
       return res.status(400).json({ message: "Email already exists" });
     }
 
-    const usernameExists = await UserActivation.exists({ username });
+    const usernameExists = await UserActivation.findOne({ username });
     if (usernameExists && !usernameExists.emailVerify && usernameExists.emailTokenExpired < Date.now()) {
-      await UserActivation.deleteOne({email});
+      await UserActivation.deleteOne({username});
     } else if (usernameExists) {
       return res.status(400).json({ message: "Username already exists" });
     }
@@ -35,7 +35,7 @@ exports.register = async (req, res) => {
       password: hashedPassword,
       email,
       emailToken: hashedToken,
-      emailTokenExpired: Date.now() + 1 * 60 * 1000, // 1 minute
+      emailTokenExpired: Date.now() + 15 * 60 * 1000, // 1 minute
     });
 
     await newUser.save();
