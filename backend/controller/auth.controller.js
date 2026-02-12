@@ -6,7 +6,9 @@ const { sendEmail } = require('../utils/SendMail.cjs');
 
 exports.register = async (req, res) => {
   try {
-    const { username, password, email } = req.body;
+    const username = req.body.username.trim();
+    const password = req.body.password.trim();
+    const email = req.body.email.trim();
 
     const emailExists = await UserActivation.findOne({ email });
     if (emailExists && !emailExists.emailVerify && emailExists.emailTokenExpired < Date.now()) {
@@ -22,7 +24,7 @@ exports.register = async (req, res) => {
       return res.status(400).json({ message: "Username already exists" });
     }
 
-    const hashedPassword = await bcrypt.hash(password.trim(), 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const verifyToken = crypto.randomBytes(32).toString('hex');
     const hashedToken = crypto
@@ -31,7 +33,7 @@ exports.register = async (req, res) => {
       .digest('hex');
 
     const newUser = new UserActivation({
-      username: username.trim(),
+      username: username,
       password: hashedPassword,
       email,
       emailToken: hashedToken,
@@ -64,7 +66,8 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const username = req.body.username.trim();
+    const password = req.body.password.trim();
 
     const user = await UserActivation.findOne({ username });
     if (user && !user.emailVerify && user.emailTokenExpired < Date.now()) {

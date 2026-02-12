@@ -31,7 +31,7 @@ const TodayTasks = ({ id, description, completed, onToggle, onAction, onError, o
 
   return (
 <label
-  className={`flex items-center gap-3 w-full p-3 rounded border cursor-pointer ${color}`}
+  className={`flex items-center gap-3 w-full p-3 hover:translate-y-[-1px] rounded border cursor-pointer ${color}`}
 >
   <input
     type="checkbox"

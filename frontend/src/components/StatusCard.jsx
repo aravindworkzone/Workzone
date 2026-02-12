@@ -7,7 +7,7 @@ const StatusCard = ({ date, totalTasks, completedTasks }) => {
       : "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200";
 
   return (
-    <div className={`rounded-lg p-3 mb-3 ${cardColor}`}>
+    <div className={`rounded-lg hover:translate-y-[-1px] p-3 mb-3 ${cardColor}`}>
       <div className="flex justify-between items-center mb-2">
         <h3 className="text-sm font-semibold">
           {date}

@@ -7,6 +7,11 @@ const manogoose = require('mongoose');
 exports.AddTask = async (req, res) => {
   try {
     const { description, mode, link } = req.body;
+    const Module = {
+      "Today Task": Task,
+      "Daily Routine": Routine,
+      "Yearly Goal": YearlyGoal
+    }[mode];
 
     if (!description || description.length > 100) {
       return res.status(400).json({ message: "Invalid Description" });
@@ -14,6 +19,12 @@ exports.AddTask = async (req, res) => {
 
     if (!mode) {
       return res.status(400).json({ message: "Mode is required" });
+    }
+
+    const validateTask = await Module.findOne({ description: {$regex: `^${description.trim()}`,$options: 'i'}, user: req.user.id, deleted: false });
+
+    if (validateTask) {
+      return res.status(400).json({ message: "Task already exists" });
     }
 
     const baseData = {

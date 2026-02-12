@@ -1,10 +1,23 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useGetTaskQuery } from "../redux/api/task";
 
 const AddTask = ({ UseCase, HandleAddTask, mode, isError, error ,isLoading }) => {
   const taskInputRef = useRef(null);
+  const [isShaking, setIsShaking] = useState(false);
   const [taskType, setTaskType] = useState('');
   const { data: year } = useGetTaskQuery('Yearly Goal');
+
+  useEffect(() => {
+    if (isError) {
+      setIsShaking(true);
+
+      const timer = setTimeout(() => {
+        setIsShaking(false);
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isError]);
 
   const handleSubmit = () => {
     const value = taskInputRef.current?.value.trim();
@@ -40,15 +53,14 @@ const AddTask = ({ UseCase, HandleAddTask, mode, isError, error ,isLoading }) =>
           <input
             ref={taskInputRef}
             type="text"
-            placeholder="Enter task..."
-            className="
-              flex-1 px-3 py-2 rounded
-              border
+            placeholder={`Enter ${UseCase.split(' ')[1]}...`}
+            className={`
+              flex-1 px-3 py-2 rounded-lg
               bg-white dark:bg-gray-900
               text-gray-900 dark:text-gray-100
-              border-gray-300 dark:border-gray-700
-              focus:outline-none focus:ring-2 focus:ring-blue-500
-            "
+              border-gray-300 dark:border-gray-700 ${isShaking ? 'animate-shake focus:ring-red-500' : 'focus:ring-blue-500'}
+              focus:outline-none focus:ring-2
+            `}
             maxLength={100}
           />
 
@@ -119,9 +131,9 @@ const AddTask = ({ UseCase, HandleAddTask, mode, isError, error ,isLoading }) =>
         </button>
       </div>
       {
-        isError && (
-          <span className="text-sm text-red-600 dark:text-red-400 mt-2 ml-2">
-            {error.data.message}
+        isShaking && (
+          <span className="text-sm text-red-600 dark:text-red-400 ml-2">
+            {error?.data?.message}
           </span>
         )
       }
