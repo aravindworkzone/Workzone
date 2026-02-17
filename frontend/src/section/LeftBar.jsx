@@ -12,14 +12,14 @@ const LeftSidebar = () => {
     {
       isLoading ? <LeftSkeleton /> : (<aside className="flex w-full lg:w-64 lg:border-r bg-gray-50 dark:bg-gray-900 flex-col justify-between p-4">
       
-      <div>
-        <div className="mb-3">
-          <p className="text-xs text-gray-500 dark:text-gray-400">Today</p>
-          <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-            {today}
-          </p>
-        </div>
+      <div className="mb-3 bg-gray-50 dark:bg-gray-900 py-2">
+        <p className="text-xs text-gray-500 dark:text-gray-400">Today</p>
+        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+          {today}
+        </p>
+      </div>
 
+      <div className="overflow-y-auto flex-1 mb-1">
         {taskStatus.data?.length > 0 && taskStatus.data?.map((t) => (
           <StatusCard
             key={t._id}
@@ -28,7 +28,6 @@ const LeftSidebar = () => {
             completedTasks={t.completedTasks}
           />
         ))}
-
       </div>
 
       <div className="border-t pt-2 text-xs text-gray-500 dark:text-gray-400">
@@ -37,6 +36,7 @@ const LeftSidebar = () => {
           {taskStatus.joinDate}
         </span>
       </div>
+
     </aside>)
     }
     </>

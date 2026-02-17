@@ -6,8 +6,6 @@ import MainLayout from "../section/MainLay";
 import { useSelector, useDispatch } from "react-redux";
 import { setDeviceType } from "../redux/slice/deviceType";
 import { useEffect } from "react";
-// import HomeSkeleton from "../components/homeSkeleton";
-
 
 const Home = () => {
 
@@ -49,12 +47,10 @@ const Home = () => {
 
   return (
     <>
-    {/* <HomeSkeleton /> */}
-
     <div className="h-screen flex flex-col bg-gray-100 dark:bg-gray-950">
       <Header />
 
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden mb-12 lg:mb-0">
         {renderLayout()}
       </div>
 
