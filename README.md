@@ -25,7 +25,7 @@ Proper 401 / 403 handling
 
 Create, update, delete tasks
 
-Task types:
+##### Task types:
 
 Today Tasks
 
