@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const UserActivation = require('../model/user.model.js');
+const Session = require('../model/session.model.js');
 const { sendEmail } = require('../utils/SendMail.cjs');
 
 exports.register = async (req, res) => {
@@ -37,7 +38,7 @@ exports.register = async (req, res) => {
       password: hashedPassword,
       email,
       emailToken: hashedToken,
-      emailTokenExpired: Date.now() + 15 * 60 * 1000, // 1 minute
+      emailTokenExpired: Date.now() + 15 * 60 * 1000, 
     });
 
     await newUser.save();
@@ -65,9 +66,12 @@ exports.register = async (req, res) => {
 };
 
 exports.login = async (req, res) => {
+  
   try {
     const username = req.body.username.trim();
     const password = req.body.password.trim();
+    const userAgent = req.headers["user-agent"];
+    const ipAddress = req.ip;
 
     const user = await UserActivation.findOne({ username });
     if (user && !user.emailVerify && user.emailTokenExpired < Date.now()) {
@@ -88,17 +92,44 @@ exports.login = async (req, res) => {
       });
     }
 
-    const token = jwt.sign(
+    const AccessToken = jwt.sign(
       { id: user._id },
       process.env.JWT_SECRET,
-      { expiresIn: '1h' }
+      { expiresIn: '15m' }
     );
 
-    res.cookie("token", token, {
+    const RefreshToken = jwt.sign(
+      { id: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    const refreshToken = crypto.createHash('sha256').update(RefreshToken).digest('hex');
+
+    const SessionCount = await Session.countDocuments({user: user._id, isValid: true});
+    if (SessionCount >= 3) {
+      return res.status(400).json({ message: "Maximum session limit reached. Please log out from other devices." });
+    }
+
+    const DiviceExist = await Session.findOne({user: user._id, ipAddress});
+    if (!DiviceExist) {
+      await Session.create({user: user._id, refreshToken, ipAddress, userAgent});
+    } else {
+      await Session.updateOne({user: user._id, ipAddress}, {refreshToken, isValid: true});
+    }
+
+    res.cookie("AccessToken", AccessToken, {
       httpOnly: true,
       sameSite: 'none',
       secure: true,
-      maxAge: 60 * 60 * 1000,
+      maxAge: 15 * 60 * 1000,
+    });
+
+    res.cookie("RefreshToken", RefreshToken, {
+      httpOnly: true,
+      sameSite: 'none',
+      secure: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
     res.status(200).json({ message: "User logged in successfully", user: user.username });
@@ -110,11 +141,32 @@ exports.login = async (req, res) => {
 
 exports.logout = async (req, res) => {
   try {
-    res.clearCookie("token", {
+    const RefreshToken = req.cookies.RefreshToken;
+    if (!RefreshToken) {
+      return res.status(400).json({ message: "Refresh token not found" });
+    }
+
+    const refreshToken = crypto.createHash('sha256').update(RefreshToken).digest('hex');
+
+    const session = await Session.updateOne({user: req.user.id, refreshToken}, {isValid: false});
+
+    if (session.matchedCount === 0) {
+      console.log("Session not found");
+      return res.status(400).json({ message: "Session not found" });
+    }
+
+    res.clearCookie("AccessToken", {
       httpOnly: true,
-      sameSite: 'lax',
-      secure: false,
+      sameSite: 'none',
+      secure: true,
     });
+
+    res.clearCookie("RefreshToken", {
+      httpOnly: true,
+      sameSite: 'none',
+      secure: true,
+    });
+
     res.status(200).json({ message: "User logged out successfully" });
   } catch (error) {
     res.status(500).json({ message: "Server error" });
@@ -163,3 +215,58 @@ exports.verifyemail = async (req, res) => {
     res.status(500).json({message: "Server Error"})
   }
 }
+
+exports.refreshToken = async (req, res) => {
+  try {
+    const refreshToken = req.cookies.RefreshToken;
+    if (!refreshToken) {
+      return res.status(401).json({ message: "Refresh token not found" });
+    }
+
+    const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET);
+    
+    const hashedToken = crypto.createHash('sha256').update(refreshToken).digest('hex');
+
+    const user = await Session.findOne({user: decoded.id, refreshToken: hashedToken, isValid: true});
+
+    if (!user) {
+      await Session.updateMany({user: decoded.id}, {isValid: false});
+      return res.status(401).json({ message: "Token expired" });
+    }
+
+    const AccessToken = jwt.sign(
+      { id: user.user },
+      process.env.JWT_SECRET,
+      { expiresIn: '15m' }
+    );
+
+    const RefreshToken = jwt.sign(
+      { id: user.user },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    res.cookie("AccessToken", AccessToken, {
+      httpOnly: true,
+      sameSite: 'none',
+      secure: true,
+      maxAge: 15 * 60 * 1000,
+    });
+
+    res.cookie("RefreshToken", RefreshToken, {
+      httpOnly: true,
+      sameSite: 'none',
+      secure: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    const hashedRefreshToken = crypto.createHash('sha256').update(RefreshToken).digest('hex');
+
+    await Session.updateOne({_id: user._id}, {refreshToken: hashedRefreshToken, isValid: true});
+
+    res.status(200).json({ message: "Token refreshed successfully" , refreshToken: true});
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
