@@ -159,7 +159,6 @@ exports.UpdateTask = async (req, res) => {
     task.completed = task.completed == 'Pending' ? 'Completed' : 'Pending';
     await task.save();
     res.status(200).json({ message: "Task updated successfully" });
-    console.log(id);
   } catch(error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
