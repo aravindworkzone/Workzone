@@ -75,7 +75,7 @@ Dedicated verification endpoint
 
 Frontend verification flow
 
-### Deployment Status:
+#### Deployment Status:
 Currently disabled in production because it requires a paid email service provider. The feature works in development and can be enabled in production once an email provider is configured.
 
 ## Current Status
