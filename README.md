@@ -1,49 +1,71 @@
-# Todo SaaS – MERN Stack
+##Todo SaaS – MERN Stack
 
-A full-stack Todo SaaS application built to demonstrate clean architecture,
-authentication flow, and scalable backend design using the MERN stack.
+I built this full-stack Todo SaaS to understand how real applications handle authentication, scalability, and clean architecture — not just CRUD operations.
 
-## Purpose
-This project is created for **code review and interview discussion**.
-It focuses on how the application is structured and how problems are solved.
+What started as a simple productivity app turned into a deeper exploration of secure authentication, session handling, and backend structure.
 
-## Tech Stack
-- React.js + Tailwind CSS
-- Redux Toolkit (RTK Query)
-- Node.js + Express.js
-- MongoDB
-- JWT Authentication using HTTP-only cookies
+This isn’t just a todo app. It’s my attempt to build something that behaves like a real SaaS product.
 
-## Key Features
-- User registration and login
-- Secure authentication & protected routes
-- Create, update, delete tasks
-- Daily routines and goal management
-- Productivity tracking logic
+##What It Does
 
-## Architecture Overview
-- Frontend communicates with backend using REST APIs
-- JWT is issued on login and stored in HTTP-only cookies
-- Middleware validates authentication for protected routes
-- RTK Query manages API calls, caching, and loading states
-- MongoDB stores user-specific task data
+Users can register and log in securely.
+Tasks can be created, updated, deleted, and organized as daily routines or yearly goals.
+Daily tasks can automatically sync from routines.
+There’s logic to track 7-day productivity and maintain a 30-day history.
 
-## Challenges & Learnings
-- Handling authentication using cookies instead of localStorage
-- Managing API state efficiently using RTK Query
-- Designing MongoDB schemas for multiple task types
-- Handling token expiry and unauthorized access
+The goal was to connect structure with meaningful logic — not just store tasks, but build relationships between them.
 
-## Project Status
-This is a **working MVP (v1)** and can be extended with:
-- Email verification
-- Forgot password
-- Role-based access
-- Advanced analytics
+How It’s Built
 
-## Notes
-Environment variables and runtime configuration are intentionally excluded.
-This repository is intended for **viewing and discussion only**.
+Frontend:
+React, Tailwind CSS, Redux Toolkit (RTK Query)
 
-## Author
+Backend:
+Node.js, Express, MongoDB
+
+Authentication:
+JWT stored in HTTP-only cookies (no localStorage)
+
+Access tokens are short-lived.
+Refresh tokens are rotated on every use.
+If a refresh token is reused or mismatched, the session is invalidated.
+
+That part was important to me — I wanted to understand how real applications prevent token replay attacks instead of just copying basic auth logic.
+
+##What I Focused On
+
+Secure cookie-based authentication
+
+Refresh token rotation and session validation
+
+Clean middleware-based route protection
+
+MongoDB schema design for multi-type tasks
+
+Efficient API state management using RTK Query
+
+Handling unauthorized states properly
+
+This project pushed me to think more like a backend engineer, not just a frontend developer.
+
+##Current Status
+
+Working MVP.
+
+Built with scalability in mind and ready to expand with:
+
+Email verification
+
+Forgot password
+
+Role-based access
+
+Analytics dashboard
+
+AI-driven routine suggestions
+
+##Author
+
+Aravind A
+
 Aravind A
