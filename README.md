@@ -1,62 +1,89 @@
 # Todo SaaS – MERN Stack
 
-I built this full-stack Todo SaaS to understand how real applications handle authentication, scalability, and clean architecture — not just CRUD operations.
+This is a full-stack Todo SaaS built to understand how real applications handle authentication, session security, and scalable backend structure — not just CRUD operations.
 
-What started as a simple productivity app turned into a deeper exploration of secure authentication, session handling, and backend structure.
+The focus of this project was building production-style authentication and structured task relationships rather than a simple task list.
 
-This isn’t just a todo app. It’s my attempt to build something that behaves like a real SaaS product.
+## Features
+### Authentication & Security
 
-## What It Does
+JWT-based authentication using HTTP-only cookies
 
-Users can register and log in securely.
-Tasks can be created, updated, deleted, and organized as daily routines or yearly goals.
-Daily tasks can automatically sync from routines.
-There’s logic to track 7-day productivity and maintain a 30-day history.
+Short-lived access tokens
 
-The goal was to connect structure with meaningful logic — not just store tasks, but build relationships between them.
+Refresh token rotation on every use
 
-### How It’s Built
+Refresh token reuse detection (prevents replay attacks)
 
-Frontend:
-React, Tailwind CSS, Redux Toolkit (RTK Query)
+Session invalidation on token mismatch
 
-Backend:
-Node.js, Express, MongoDB
+Middleware-protected routes
 
-Authentication:
-JWT stored in HTTP-only cookies (no localStorage)
+Proper 401 / 403 handling
 
-Access tokens are short-lived.
-Refresh tokens are rotated on every use.
-If a refresh token is reused or mismatched, the session is invalidated.
+### Task System
 
-That part was important to me — I wanted to understand how real applications prevent token replay attacks instead of just copying basic auth logic.
+Create, update, delete tasks
 
-## What I Focused On
+Task types:
 
-Secure cookie-based authentication
+Today Tasks
 
-Refresh token rotation and session validation
+Daily Routines
 
-Clean middleware-based route protection
+Yearly Goals
 
-MongoDB schema design for multi-type tasks
+Routine → Today automatic sync
 
-Efficient API state management using RTK Query
+Goal-linked task relationships
 
-Handling unauthorized states properly
+Soft delete support
 
-This project pushed me to think more like a backend engineer, not just a frontend developer.
+7-day productivity tracking
+
+30-day history aggregation
+
+## Tech Stack
+
+### Frontend:
+
+React (Vite)
+
+Tailwind CSS
+
+Redux Toolkit + RTK Query
+
+### Backend:
+
+Node.js
+
+Express
+
+MongoDB (Mongoose)
+
+## Email Verification
+
+Email verification is fully implemented with:
+
+Secure random token generation
+
+SHA256 hashed token storage
+
+Expiry validation
+
+Dedicated verification endpoint
+
+Frontend verification flow
+
+### Deployment Status:
+Currently disabled in production because it requires a paid email service provider. The feature works in development and can be enabled in production once an email provider is configured.
 
 ## Current Status
 
 Working MVP.
+Architecture designed for future expansion, including:
 
-Built with scalability in mind and ready to expand with:
-
-Email verification
-
-Forgot password
+Forgot password flow
 
 Role-based access
 
