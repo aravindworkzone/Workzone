@@ -1,4 +1,4 @@
-#Todo SaaS – MERN Stack
+# Todo SaaS – MERN Stack
 
 I built this full-stack Todo SaaS to understand how real applications handle authentication, scalability, and clean architecture — not just CRUD operations.
 
@@ -6,7 +6,7 @@ What started as a simple productivity app turned into a deeper exploration of se
 
 This isn’t just a todo app. It’s my attempt to build something that behaves like a real SaaS product.
 
-#What It Does
+## What It Does
 
 Users can register and log in securely.
 Tasks can be created, updated, deleted, and organized as daily routines or yearly goals.
@@ -15,7 +15,7 @@ There’s logic to track 7-day productivity and maintain a 30-day history.
 
 The goal was to connect structure with meaningful logic — not just store tasks, but build relationships between them.
 
-How It’s Built
+### How It’s Built
 
 Frontend:
 React, Tailwind CSS, Redux Toolkit (RTK Query)
@@ -32,7 +32,7 @@ If a refresh token is reused or mismatched, the session is invalidated.
 
 That part was important to me — I wanted to understand how real applications prevent token replay attacks instead of just copying basic auth logic.
 
-#What I Focused On
+## What I Focused On
 
 Secure cookie-based authentication
 
@@ -48,7 +48,7 @@ Handling unauthorized states properly
 
 This project pushed me to think more like a backend engineer, not just a frontend developer.
 
-#Current Status
+## Current Status
 
 Working MVP.
 
@@ -64,6 +64,6 @@ Analytics dashboard
 
 AI-driven routine suggestions
 
-#Author
+## Author
 
 Aravind A
