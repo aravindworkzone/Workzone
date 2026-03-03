@@ -7,7 +7,7 @@ const { AICall } = require('../utils/GoogleGenAi');
 
 exports.AddTask = async (req, res) => {
   try {
-    const { description, mode, link } = req.body;
+    let { description, mode, link } = req.body;
     const Module = {
       "Today Task": Task,
       "Daily Routine": Routine,
@@ -43,7 +43,7 @@ exports.AddTask = async (req, res) => {
       case "Yearly Goal":
         await YearlyGoal.create(baseData);
         AiRes = await AICall ('routine',description);
-        // AiRes = ["Routine 1", "Routine 2", "Routine 3"];
+        link = await YearlyGoal.findOne({description: {$regex: `^${description.trim()}`,$options: 'i'}, user: req.user.id, deleted: false }).select('_id');
         break;
 
       case "Daily Routine":
@@ -58,7 +58,7 @@ exports.AddTask = async (req, res) => {
         return res.status(400).json({ message: "Invalid mode" });
     }
 
-    res.status(201).json({ message: "Task added successfully", baseData, aiGenerated: AiRes });
+    res.status(201).json({ message: "Task added successfully", baseData, aiGenerated: AiRes, link: link._id || null });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });

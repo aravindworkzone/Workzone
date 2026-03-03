@@ -17,6 +17,7 @@ const task = {
                 {
                 "routine": ["Unrealistic Goal"]
                 }
+                - respone should not contanin '-'
 
                 Yearly goal:
                 `

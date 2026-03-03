@@ -88,28 +88,58 @@ const TaskPart = () => {
 
   const [addTask, { isLoading: addTaskLoading,error: addTaskError, isError: addTaskIsError }] = useAddTaskMutation();
   const [GoalTask] = useGoalTaskMutation();
-  const HandleAddTask = async (input) => {
-    try{
-      const task = { description: input.description, mode: input.mode, link: input.link };
-      const result = await addTask(task);
-      if (result) {
+  const HandleAddTask = async (input, Ai = false) => {
+    try {
+      if (Ai) {
+        for (let i = 0; i < input.length; i++) {
+          const data = input[i].split(" - ");
+
+          await addTask({
+            description: data[0],
+            mode: "Daily Routine",
+            link: data[1],
+          });
+        }
+        setpopup(null);
         await GoalTask();
-        if(!result.data.aiGenerated.length > 0) return;
-        console.log(result.data.aiGenerated);
-        setpopup(result.data.aiGenerated.map((t) =><label className="flex gap-3 justify-start items-center pt-5 cursor-pointer">
-                        <input type="checkbox" className="peer hidden" />
-                        <div className="w-4 h-4 rounded-full border-2 border-gray-400 flex items-center justify-center peer-checked:bg-indigo-600 peer-checked:border-indigo-600 transition-all duration-200" />
-                        <p>{t}</p>
-                    </label>));
+        return;
       }
-    }catch(error){
+
+      const result = await addTask({
+        description: input.description,
+        mode: input.mode,
+        link: input.link,
+      });
+
+      if (result?.data) {
+        await GoalTask();
+
+        if (result.data.aiGenerated?.length) {
+          setpopup(
+            result.data.aiGenerated.map((t) => (
+              <label key={t} className="flex gap-3 justify-start items-center pt-5 cursor-pointer">
+                <input
+                  type="checkbox"
+                  name="description"
+                  value={`${t} - ${result.data.link}`}
+                  className="peer hidden"
+                />
+                <div className="w-4 h-4 rounded-full border-2 border-gray-400 flex items-center justify-center peer-checked:bg-indigo-600 peer-checked:border-indigo-600 transition-all duration-200" />
+                <p>{t}</p>
+              </label>
+            ))
+          );
+        }
+      }
+
+    } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   return (
     <>
-    {popup && <Popup children={popup} setpopup={setpopup} header={'Routine Suggestion'}/>}
+    {popup && <Popup children={popup} cleaner={setpopup} update={HandleAddTask} header={'Routine Suggestion'}/>}
     {
       queryLoading ? <MainSkeleton /> : (<main className="flex-1 p-4 sm:p-6 overflow-y-auto">
       <AddTask UseCase={`Add ${mode.split(' ')[1]}`} HandleAddTask={HandleAddTask} mode={mode} isError={addTaskIsError} error={addTaskError} isLoading={addTaskLoading} />
