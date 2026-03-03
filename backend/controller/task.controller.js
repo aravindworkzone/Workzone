@@ -3,10 +3,11 @@ const Routine = require("../model/routine.model");
 const YearlyGoal = require("../model/yearly.model");
 const User = require("../model/user.model");
 const manogoose = require('mongoose');
+const { AICall } = require('../utils/GoogleGenAi');
 
 exports.AddTask = async (req, res) => {
   try {
-    const { description, mode, link } = req.body;
+    let { description, mode, link } = req.body;
     const Module = {
       "Today Task": Task,
       "Daily Routine": Routine,
@@ -32,6 +33,8 @@ exports.AddTask = async (req, res) => {
       user: req.user.id,
     };
 
+    let AiRes = null;
+
     switch (mode) {
       case "Today Task":
         await Task.create(baseData);
@@ -39,6 +42,8 @@ exports.AddTask = async (req, res) => {
 
       case "Yearly Goal":
         await YearlyGoal.create(baseData);
+        AiRes = await AICall ('routine',description);
+        link = await YearlyGoal.findOne({description: {$regex: `^${description.trim()}`,$options: 'i'}, user: req.user.id, deleted: false }).select('_id');
         break;
 
       case "Daily Routine":
@@ -53,7 +58,7 @@ exports.AddTask = async (req, res) => {
         return res.status(400).json({ message: "Invalid mode" });
     }
 
-    res.status(201).json({ message: "Task added successfully", baseData });
+    res.status(201).json({ message: "Task added successfully", baseData, aiGenerated: AiRes, link: link._id || null });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
