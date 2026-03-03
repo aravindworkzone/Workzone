@@ -1,95 +1,107 @@
 # Todo SaaS – MERN Stack
 
-This is a full-stack Todo SaaS built to understand how real applications handle authentication, session security, and scalable backend structure — not just CRUD operations.
+    This is a full-stack Todo SaaS built to understand how real applications handle authentication, session security, and scalable backend structure — not just CRUD operations.
 
-The focus of this project was building production-style authentication and structured task relationships rather than a simple task list.
+    The focus of this project was building production-style authentication and structured task relationships rather than a simple task list.
 
 ## Features
-### Authentication & Security
 
-JWT-based authentication using HTTP-only cookies
+    ### Authentication & Security
 
-Short-lived access tokens
+        JWT-based authentication using HTTP-only cookies
 
-Refresh token rotation on every use
+        Short-lived access tokens
 
-Refresh token reuse detection (prevents replay attacks)
+        Refresh token rotation on every use
 
-Session invalidation on token mismatch
+        Refresh token reuse detection (prevents replay attacks)
 
-Middleware-protected routes
+        Session invalidation on token mismatch
 
-Proper 401 / 403 handling
+        Middleware-protected routes
 
-### Task System
+        Proper 401 / 403 handling
 
-Create, update, delete tasks
+    ### Task System
 
-##### Task types:
+        Create, update, delete tasks
 
-Today Tasks
+    #### Task types:
 
-Daily Routines
+        Today Tasks
 
-Yearly Goals
+        Daily Routines
 
-Routine → Today automatic sync
+        Yearly Goals
 
-Goal-linked task relationships
+        Routine → Today automatic sync
 
-Soft delete support
+        Goal-linked task relationships
 
-7-day productivity tracking
+        Soft delete support
 
-30-day history aggregation
+        7-day productivity tracking
+
+        30-day history aggregation
 
 ## Tech Stack
 
-### Frontend:
+    ### Frontend:
 
-React (Vite)
+        React (Vite)
 
-Tailwind CSS
+        Tailwind CSS
 
-Redux Toolkit + RTK Query
+        Redux Toolkit + RTK Query
 
-### Backend:
+    ### Backend:
 
-Node.js
+        Node.js
 
-Express
+        Express
 
-MongoDB (Mongoose)
+        MongoDB (Mongoose)
 
 ## Email Verification
 
-Email verification is fully implemented with:
+    Email verification is fully implemented with:
 
-Secure random token generation
+    Secure random token generation
 
-SHA256 hashed token storage
+    SHA256 hashed token storage
 
-Expiry validation
+    Expiry validation
 
-Dedicated verification endpoint
+    Dedicated verification endpoint
 
-Frontend verification flow
+    Frontend verification flow
 
 #### Deployment Status:
-Currently disabled in production because it requires a paid email service provider. The feature works in development and can be enabled in production once an email provider is configured.
+
+    Currently disabled in production because it requires a paid email service provider. The feature works in development and can be enabled in production once an email provider is configured.
+
+## AI-Powered Routine Generation 
+
+    Converts yearly goals into structured daily routines using AI  
+
+    Uses controlled prompt engineering  
+
+    Parses structured JSON responses  
+
+    Automatically links generated routines to goals  
 
 ## Current Status
 
-Working MVP.
-Architecture designed for future expansion, including:
+    Working MVP.
+    Architecture designed for future expansion, including:
 
-Forgot password flow
+    Forgot password flow
 
-Role-based access
+    Role-based access
 
-Analytics dashboard
+    Analytics dashboard
 
-AI-driven routine suggestions
+    AI-driven routine suggestions
 
 ## Author
 
