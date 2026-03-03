@@ -5,91 +5,103 @@ This is a full-stack Todo SaaS built to understand how real applications handle 
 The focus of this project was building production-style authentication and structured task relationships rather than a simple task list.
 
 ## Features
+
 ### Authentication & Security
 
-JWT-based authentication using HTTP-only cookies
+    JWT-based authentication using HTTP-only cookies
 
-Short-lived access tokens
+    Short-lived access tokens
 
-Refresh token rotation on every use
+    Refresh token rotation on every use
 
-Refresh token reuse detection (prevents replay attacks)
+    Refresh token reuse detection (prevents replay attacks)
 
-Session invalidation on token mismatch
+    Session invalidation on token mismatch
 
-Middleware-protected routes
+    Middleware-protected routes
 
-Proper 401 / 403 handling
+    Proper 401 / 403 handling
 
 ### Task System
 
-Create, update, delete tasks
+    Create, update, delete tasks
 
-##### Task types:
+#### Task types:
 
-Today Tasks
+    Today Tasks
 
-Daily Routines
+    Daily Routines
 
-Yearly Goals
+    Yearly Goals
 
-Routine → Today automatic sync
+    Routine → Today automatic sync
 
-Goal-linked task relationships
+    Goal-linked task relationships
 
-Soft delete support
+    Soft delete support
 
-7-day productivity tracking
+    7-day productivity tracking
 
-30-day history aggregation
+    30-day history aggregation
 
 ## Tech Stack
 
 ### Frontend:
 
-React (Vite)
+    React (Vite)
 
-Tailwind CSS
+    Tailwind CSS
 
-Redux Toolkit + RTK Query
+    Redux Toolkit + RTK Query
 
 ### Backend:
 
-Node.js
+    Node.js
 
-Express
+    Express
 
-MongoDB (Mongoose)
+    MongoDB (Mongoose)
 
 ## Email Verification
 
-Email verification is fully implemented with:
+    Email verification is fully implemented with:
 
-Secure random token generation
+    Secure random token generation
 
-SHA256 hashed token storage
+    SHA256 hashed token storage
 
-Expiry validation
+    Expiry validation
 
-Dedicated verification endpoint
+    Dedicated verification endpoint
 
-Frontend verification flow
+    Frontend verification flow
 
 #### Deployment Status:
-Currently disabled in production because it requires a paid email service provider. The feature works in development and can be enabled in production once an email provider is configured.
+
+    Currently disabled in production because it requires a paid email service provider. The feature works in development and can be enabled in production once an email provider is configured.
+
+## AI-Powered Routine Generation 
+
+    Converts yearly goals into structured daily routines using AI  
+
+    Uses controlled prompt engineering  
+
+    Parses structured JSON responses  
+
+    Automatically links generated routines to goals  
 
 ## Current Status
 
-Working MVP.
-Architecture designed for future expansion, including:
+    Working MVP.
+    Architecture designed for future expansion, including:
 
-Forgot password flow
+    Forgot password flow
 
-Role-based access
+    Role-based access
 
-Analytics dashboard
+    Analytics dashboard
 
-AI-driven routine suggestions
+    AI-driven routine suggestions
 
 ## Author
 
