@@ -1,66 +1,66 @@
 # Todo SaaS – MERN Stack
 
-This is a full-stack Todo SaaS built to understand how real applications handle authentication, session security, and scalable backend structure — not just CRUD operations.
+    This is a full-stack Todo SaaS built to understand how real applications handle authentication, session security, and scalable backend structure — not just CRUD operations.
 
-The focus of this project was building production-style authentication and structured task relationships rather than a simple task list.
+    The focus of this project was building production-style authentication and structured task relationships rather than a simple task list.
 
 ## Features
 
-### Authentication & Security
+    ### Authentication & Security
 
-    JWT-based authentication using HTTP-only cookies
+        JWT-based authentication using HTTP-only cookies
 
-    Short-lived access tokens
+        Short-lived access tokens
 
-    Refresh token rotation on every use
+        Refresh token rotation on every use
 
-    Refresh token reuse detection (prevents replay attacks)
+        Refresh token reuse detection (prevents replay attacks)
 
-    Session invalidation on token mismatch
+        Session invalidation on token mismatch
 
-    Middleware-protected routes
+        Middleware-protected routes
 
-    Proper 401 / 403 handling
+        Proper 401 / 403 handling
 
-### Task System
+    ### Task System
 
-    Create, update, delete tasks
+        Create, update, delete tasks
 
-#### Task types:
+    #### Task types:
 
-    Today Tasks
+        Today Tasks
 
-    Daily Routines
+        Daily Routines
 
-    Yearly Goals
+        Yearly Goals
 
-    Routine → Today automatic sync
+        Routine → Today automatic sync
 
-    Goal-linked task relationships
+        Goal-linked task relationships
 
-    Soft delete support
+        Soft delete support
 
-    7-day productivity tracking
+        7-day productivity tracking
 
-    30-day history aggregation
+        30-day history aggregation
 
 ## Tech Stack
 
-### Frontend:
+    ### Frontend:
 
-    React (Vite)
+        React (Vite)
 
-    Tailwind CSS
+        Tailwind CSS
 
-    Redux Toolkit + RTK Query
+        Redux Toolkit + RTK Query
 
-### Backend:
+    ### Backend:
 
-    Node.js
+        Node.js
 
-    Express
+        Express
 
-    MongoDB (Mongoose)
+        MongoDB (Mongoose)
 
 ## Email Verification
 
