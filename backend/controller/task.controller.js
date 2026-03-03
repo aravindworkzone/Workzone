@@ -43,6 +43,7 @@ exports.AddTask = async (req, res) => {
       case "Yearly Goal":
         await YearlyGoal.create(baseData);
         AiRes = await AICall ('routine',description);
+        // AiRes = ["Routine 1", "Routine 2", "Routine 3"];
         break;
 
       case "Daily Routine":

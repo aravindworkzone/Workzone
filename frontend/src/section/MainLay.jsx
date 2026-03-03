@@ -3,6 +3,7 @@ import TaskSlot from "../components/TaskSlot";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import MainSkeleton from "../components/Loader/MainSkeleton";
+import Popup from "../components/popup";
 import { useGetTaskQuery, useUpdateTaskMutation, useDeleteTaskMutation, useEditTaskMutation, useAddTaskMutation, useGoalTaskMutation } from '../redux/api/task';
 
 const TaskPart = () => {
@@ -12,6 +13,7 @@ const TaskPart = () => {
 
   const [taskLoading, setTaskLoading] = useState({});
   const [taskError, setTaskError] = useState([]);
+  const [popup, setpopup] = useState(null);
 
   const [updateTask] = useUpdateTaskMutation();
   const handleUpdate = async (id) => {
@@ -92,6 +94,13 @@ const TaskPart = () => {
       const result = await addTask(task);
       if (result) {
         await GoalTask();
+        if(!result.data.aiGenerated.length > 0) return;
+        console.log(result.data.aiGenerated);
+        setpopup(result.data.aiGenerated.map((t) =><label className="flex gap-3 justify-start items-center pt-5 cursor-pointer">
+                        <input type="checkbox" className="peer hidden" />
+                        <div className="w-4 h-4 rounded-full border-2 border-gray-400 flex items-center justify-center peer-checked:bg-indigo-600 peer-checked:border-indigo-600 transition-all duration-200" />
+                        <p>{t}</p>
+                    </label>));
       }
     }catch(error){
       console.log(error);
@@ -100,6 +109,7 @@ const TaskPart = () => {
 
   return (
     <>
+    {popup && <Popup children={popup} setpopup={setpopup} header={'Routine Suggestion'}/>}
     {
       queryLoading ? <MainSkeleton /> : (<main className="flex-1 p-4 sm:p-6 overflow-y-auto">
       <AddTask UseCase={`Add ${mode.split(' ')[1]}`} HandleAddTask={HandleAddTask} mode={mode} isError={addTaskIsError} error={addTaskError} isLoading={addTaskLoading} />

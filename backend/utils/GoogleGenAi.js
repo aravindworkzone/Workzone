@@ -10,9 +10,7 @@ const task = {
                 - Respond ONLY in valid JSON.
                 - Do not include explanation.
                 - Output format must be:
-                {
-                "routine": ["task1", "task2", "task3"]
-                }
+                ["task1", "task2", "task3"]
                 - Each routine item must be maximum 40 characters.
                 - Keep tasks short and clear.
                 - if task is unrealistic. respone
@@ -26,7 +24,6 @@ const task = {
 
 async function AICall(model,message) {
   try {
-    console.log(`You are a productivity assistant. ${task.model} ${message}`);
     const res = await AI.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: `You are a productivity assistant. ${task[model]} ${message}`,
