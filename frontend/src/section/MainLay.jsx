@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import MainSkeleton from "../components/Loader/MainSkeleton";
 import Popup from "../components/popup";
+import noTaskDark from "../assets/no task dark.png"
+import noTaskLight from "../assets/no task light.png"
 import { useGetTaskQuery, useUpdateTaskMutation, useDeleteTaskMutation, useEditTaskMutation, useAddTaskMutation, useGoalTaskMutation } from '../redux/api/task';
 
 const TaskPart = () => {
@@ -165,7 +167,22 @@ const TaskPart = () => {
             onEdit={handleEdit}
             yearly={mode !== 'Yearly Goal' ? t.yearly : false}
             Routine={mode === 'Daily Routine' ? true : false}
-          />) : (<p className="flex justify-center text-sm text-gray-600 dark:text-gray-400">No {mode}</p>)}
+          />) : (
+          <div className="flex flex-col justify-center text-sm text-gray-600 dark:text-gray-400">
+            <img
+              src={noTaskLight}
+              className="h-100 object-contain rounded-[3px] dark:hidden"
+            />
+            <img
+              src={noTaskDark}
+              className="h-100 object-contain rounded-[3px] hidden dark:block"
+            />
+            <div className="flex flex-col items-center">
+              <p className="text-md font-semibold">🎉 No {mode}</p>
+              <p className="text-sm">Create a new task to get started</p>
+            </div>
+            </div>)
+          }
         </div>
       </div>
     </main>)

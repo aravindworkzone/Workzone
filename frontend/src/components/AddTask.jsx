@@ -6,6 +6,13 @@ const AddTask = ({ UseCase, HandleAddTask, mode, isError, error ,isLoading }) =>
   const [isShaking, setIsShaking] = useState(false);
   const [taskType, setTaskType] = useState('');
   const { data: year } = useGetTaskQuery('Yearly Goal');
+  const [placehold, setPlacehold] = useState('');
+
+  const placeholders = {
+    "Add Task": "What needs to be done today?",
+    "Add Routine": "What should be part of your daily routine?",
+    "Add Goal": "What do you want to achieve this year?"
+  };
 
   useEffect(() => {
     if (isError) {
@@ -13,7 +20,7 @@ const AddTask = ({ UseCase, HandleAddTask, mode, isError, error ,isLoading }) =>
 
       const timer = setTimeout(() => {
         setIsShaking(false);
-      }, 3000);
+      }, 10000);
 
       return () => clearTimeout(timer);
     }
@@ -53,7 +60,7 @@ const AddTask = ({ UseCase, HandleAddTask, mode, isError, error ,isLoading }) =>
           <input
             ref={taskInputRef}
             type="text"
-            placeholder={`Enter ${UseCase.split(' ')[1]}...`}
+            placeholder={`+ ${placeholders[UseCase]}`}
             className={`
               flex-1 px-3 py-2 rounded-lg
               bg-white dark:bg-gray-900
