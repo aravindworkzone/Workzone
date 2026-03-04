@@ -10,6 +10,15 @@ select:-webkit-autofill {
   transition: background-color 5000s ease-in-out 0s;
 }
 
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 @theme {
   --animate-shake: shake 0.3s ease-in-out;
 

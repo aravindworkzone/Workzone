@@ -15,7 +15,7 @@ const task = {
                 - Keep tasks short and clear.
                 - if task is unrealistic. respone
                 {
-                "routine": ["Unrealistic Goal"]
+                "error": [why you unable to generate suggestions (max 100 characters)]
                 }
                 - respone should not contanin '-'
 
@@ -26,13 +26,20 @@ const task = {
 async function AICall(model,message) {
   try {
     const res = await AI.models.generateContent({
-      model: "gemini-3-flash-preview",
+      model: "gemini-2.5-flash",
       contents: `You are a productivity assistant. ${task[model]} ${message}`,
     });
 
-    console.log(res.text);
-    return JSON.parse(res.text);
+    const cleaned = res.text.replace(/```json|```/g, "").trim();
+
+    console.log(cleaned);
+    return JSON.parse(cleaned);
   } catch (error) {
+    if (error.status === 429) {
+      return {
+        error: "AI service busy. Try again later for suggestions."
+      };
+    }
     console.error(error);
   }
 }

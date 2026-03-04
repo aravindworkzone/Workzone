@@ -51,8 +51,7 @@ const Header = () => {
         h-16
         px-4 sm:px-6
         grid grid-cols-3 items-center
-        border-b
-        bg-white dark:bg-gray-900
+        bg-white dark:bg-[#16233a]
         text-gray-900 dark:text-gray-100
       "
     >

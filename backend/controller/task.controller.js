@@ -44,6 +44,9 @@ exports.AddTask = async (req, res) => {
         await YearlyGoal.create(baseData);
         AiRes = await AICall ('routine',description);
         link = await YearlyGoal.findOne({description: {$regex: `^${description.trim()}`,$options: 'i'}, user: req.user.id, deleted: false }).select('_id');
+        if (AiRes.error) {
+          return res.status(400).json({ message: AiRes.error });
+        }
         break;
 
       case "Daily Routine":
@@ -115,9 +118,7 @@ exports.GetTasks = async (req, res) => {
 
 exports.GetTaskHistory = async (req, res) => {
   try {
-    const EndDate = new Date();
-    EndDate.setHours(0, 0, 0, 0);
-    const startDate = new Date(EndDate);
+    let startDate = new Date();
     startDate.setDate(startDate.getDate() - 30);
     startDate.setHours(0, 0, 0, 0);
 
@@ -125,13 +126,27 @@ exports.GetTaskHistory = async (req, res) => {
       {
         $match:{
           user: new manogoose.Types.ObjectId(req.user.id),
-          createdAt: {$gte: startDate, $lte: EndDate},
+          createdAt: {$gte: startDate},
           deleted: false,
         }
       },
       {
         $group:{
-          _id: {$dateToString: {format: "%b %d %Y", date: "$createdAt"}},
+          _id: {
+            $dateToString: {
+              format: "%b %d %Y",
+              date: "$createdAt",
+              timezone: "Asia/Kolkata"
+            }
+          },
+          day: {
+            $first: {
+              $arrayElemAt: [
+                ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
+                { $subtract: [{ $dayOfWeek: "$createdAt" }, 1] }
+              ]
+            }
+          },
           totalTasks: {$sum: 1},
           completedTasks: {$sum: {$cond: [{$eq: ["$completed", 'Completed']}, 1, 0]}}
         }
@@ -139,9 +154,20 @@ exports.GetTaskHistory = async (req, res) => {
       {$sort: {_id: -1}}
     ]);
 
+    const history = taskHistory.map((t, i) => {
+      if(i == 0){
+        return {...t, day: "Today"}
+      }
+      if(i == 1){
+        return {...t, day: "Yesterday"}
+      }
+
+      return t;
+    });
+
     const joinDate = (await User.findById(req.user.id, { createdAt: 1 })).createdAt.toDateString().split(' ').slice(1).join(' ');
 
-    res.status(200).json({joinDate, data: taskHistory });
+    res.status(200).json({joinDate, data: history });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
@@ -188,6 +214,14 @@ exports.DeleteTask = async (req, res) => {
     await task.save();
     if(type == 'Daily Routine'){
       await Task.updateOne({link: id, createdAt: { $gte: today }},{$set: {deleted: true}});
+    } else if (type == 'Yearly Goal'){
+      const linkedRoutineIds = await Routine.find({link: id}).select('_id');
+      await Promise.all(
+        linkedRoutineIds.map(({_id}) => {
+          return Task.updateMany({link: _id, createdAt: { $gte: today }},{$set: {deleted: true}});
+        })
+      );
+      await Routine.updateMany({link: id},{$set: {deleted: true}});
     }
     res.status(200).json({ message: "Task deleted successfully" });
   }catch(e){

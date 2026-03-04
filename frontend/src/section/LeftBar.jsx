@@ -12,18 +12,18 @@ const LeftSidebar = () => {
     {
       isLoading ? <LeftSkeleton /> : (<aside className="flex w-full lg:w-64 lg:border-r bg-gray-50 dark:bg-gray-900 flex-col justify-between p-4">
       
-      <div className="mb-3 bg-gray-50 dark:bg-gray-900 py-2">
-        <p className="text-xs text-gray-500 dark:text-gray-400">Today</p>
-        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-          {today}
-        </p>
+      <div className="mb-2 bg-gray-50 dark:bg-gray-900">
+        <h2 className="text-lg font-semibold text-gray-600 dark:text-gray-300 mb-1">
+          History
+        </h2>
       </div>
 
-      <div className="overflow-y-auto flex-1 mb-1">
+      <div className="overflow-y-auto flex-1 mb-1 mt-1 hide-scrollbar">
         {taskStatus.data?.length > 0 && taskStatus.data?.map((t) => (
           <StatusCard
             key={t._id}
             date={t._id}
+            day={t.day}
             totalTasks={t.totalTasks}
             completedTasks={t.completedTasks}
           />
