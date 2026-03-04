@@ -1,31 +1,34 @@
-const StatusCard = ({ date, totalTasks, completedTasks }) => {
+const StatusCard = ({ date, day, totalTasks, completedTasks }) => {
   const pendingTasks = totalTasks - completedTasks;
 
-  const cardColor =
-    pendingTasks > 0
-      ? "bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200"
-      : "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200";
-
   return (
-    <div className={`rounded-lg hover:translate-y-[-1px] p-3 mb-3 ${cardColor}`}>
+    <div className={`rounded-lg hover:translate-y-[-1px] p-3 mb-3 bg-gray-50 dark:bg-gray-800 text-gray-300`}>
+      <h2 className="text-xs mb-1 text-gray-400 font-semibold">{day}</h2>
       <div className="flex justify-between items-center mb-2">
         <h3 className="text-sm font-semibold">
           {date}
         </h3>
-        <span className="text-xs opacity-80">
-          {completedTasks}/{totalTasks}
-        </span>
       </div>
 
-      <div className="flex justify-between text-xs">
-        <span>Pending</span>
-        <span>{pendingTasks}</span>
+      <div className="flex justify-start gap-5 mt-2 text-xs mb-1">
+          <div className="flex gap-1 items-center">
+            <span className="inline-block w-[11px] h-[11px] bg-green-400 rounded-full"></span>
+            <span>{completedTasks}</span>
+            <span>Done</span>
+          </div>
+
+          <div className="flex gap-1 items-center">
+            <span className="inline-block w-[11px] h-[11px] bg-yellow-400 rounded-full"></span>
+            <span>{pendingTasks}</span>
+            <span>Pending</span>
+          </div>
       </div>
 
-      <div className="flex justify-between text-xs">
-        <span>Completed</span>
-        <span>{completedTasks}</span>
-      </div>
+      {day === "Today" && <div className="mt-4">
+        <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+          <div className="bg-green-600 h-2.5 rounded-full" style={{ width: `${(completedTasks / totalTasks) * 100}%` }} />
+        </div>
+      </div>}
     </div>
   );
 };

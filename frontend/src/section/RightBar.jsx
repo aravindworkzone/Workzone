@@ -30,7 +30,7 @@ const RightSidebar = () => {
       w-full lg:w-64
       bg-gray-50 dark:bg-gray-900
       p-4 space-y-4
-      text-gray-900 dark:text-gray-100 overflow-y-auto
+      text-gray-900 dark:text-gray-100 overflow-y-auto hide-scrollbar
     ">
       <ListTask head="Yearly Goal" body={year} onEdit={openYearlyGoal}/>
 

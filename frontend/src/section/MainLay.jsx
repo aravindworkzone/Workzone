@@ -4,8 +4,7 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import MainSkeleton from "../components/Loader/MainSkeleton";
 import Popup from "../components/popup";
-import noTaskDark from "../assets/no task dark.png"
-import noTaskLight from "../assets/no task light.png"
+import noTask from "../assets/no task.png"
 import { useGetTaskQuery, useUpdateTaskMutation, useDeleteTaskMutation, useEditTaskMutation, useAddTaskMutation, useGoalTaskMutation } from '../redux/api/task';
 
 const TaskPart = () => {
@@ -143,7 +142,7 @@ const TaskPart = () => {
     <>
     {popup && <Popup children={popup} cleaner={setpopup} update={HandleAddTask} header={'Routine Suggestion'}/>}
     {
-      queryLoading ? <MainSkeleton /> : (<main className="flex-1 p-4 sm:p-6 overflow-y-auto">
+      queryLoading ? <MainSkeleton /> : (<main className="flex-1 p-4 sm:p-6 overflow-y-auto hide-scrollbar">
       <AddTask UseCase={`Add ${mode.split(' ')[1]}`} HandleAddTask={HandleAddTask} mode={mode} isError={addTaskIsError} error={addTaskError} isLoading={addTaskLoading} />
       <div className="
         bg-white dark:bg-gray-800
@@ -170,14 +169,10 @@ const TaskPart = () => {
           />) : (
           <div className="flex flex-col justify-center text-sm text-gray-600 dark:text-gray-400">
             <img
-              src={noTaskLight}
-              className="h-100 object-contain rounded-[3px] dark:hidden"
+              src={noTask}
+              className="h-100 object-contain rounded-[3px]"
             />
-            <img
-              src={noTaskDark}
-              className="h-100 object-contain rounded-[3px] hidden dark:block"
-            />
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center mt-[-50px] mb-4">
               <p className="text-md font-semibold">🎉 No {mode}</p>
               <p className="text-sm">Create a new task to get started</p>
             </div>

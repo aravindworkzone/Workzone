@@ -118,9 +118,7 @@ exports.GetTasks = async (req, res) => {
 
 exports.GetTaskHistory = async (req, res) => {
   try {
-    const EndDate = new Date();
-    EndDate.setHours(0, 0, 0, 0);
-    const startDate = new Date(EndDate);
+    let startDate = new Date();
     startDate.setDate(startDate.getDate() - 30);
     startDate.setHours(0, 0, 0, 0);
 
@@ -128,13 +126,27 @@ exports.GetTaskHistory = async (req, res) => {
       {
         $match:{
           user: new manogoose.Types.ObjectId(req.user.id),
-          createdAt: {$gte: startDate, $lte: EndDate},
+          createdAt: {$gte: startDate},
           deleted: false,
         }
       },
       {
         $group:{
-          _id: {$dateToString: {format: "%b %d %Y", date: "$createdAt"}},
+          _id: {
+            $dateToString: {
+              format: "%b %d %Y",
+              date: "$createdAt",
+              timezone: "Asia/Kolkata"
+            }
+          },
+          day: {
+            $first: {
+              $arrayElemAt: [
+                ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
+                { $subtract: [{ $dayOfWeek: "$createdAt" }, 1] }
+              ]
+            }
+          },
           totalTasks: {$sum: 1},
           completedTasks: {$sum: {$cond: [{$eq: ["$completed", 'Completed']}, 1, 0]}}
         }
@@ -142,9 +154,20 @@ exports.GetTaskHistory = async (req, res) => {
       {$sort: {_id: -1}}
     ]);
 
+    const history = taskHistory.map((t, i) => {
+      if(i == 0){
+        return {...t, day: "Today"}
+      }
+      if(i == 1){
+        return {...t, day: "Yesterday"}
+      }
+
+      return t;
+    });
+
     const joinDate = (await User.findById(req.user.id, { createdAt: 1 })).createdAt.toDateString().split(' ').slice(1).join(' ');
 
-    res.status(200).json({joinDate, data: taskHistory });
+    res.status(200).json({joinDate, data: history });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
