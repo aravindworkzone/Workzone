@@ -154,11 +154,17 @@ exports.GetTaskHistory = async (req, res) => {
       {$sort: {_id: -1}}
     ]);
 
+    const Month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+    let today = new Date();
+    today = Month[today.getMonth()] + ' ' + String(today.getDate()).padStart(2, '0')  + ' ' + today.getFullYear();
+    const yesterday = today.split(' ')[0] + ' ' + String(today.split(' ')[1] - 1).padStart(2, '0')  + ' ' + today.split(' ')[2];
+
     const history = taskHistory.map((t, i) => {
-      if(i == 0){
+      if(i == 0 && today == t._id){
         return {...t, day: "Today"}
       }
-      if(i == 1){
+      if(i == 1 && yesterday == t._id){
         return {...t, day: "Yesterday"}
       }
 
