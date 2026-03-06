@@ -4,6 +4,7 @@ import { useDispatch } from "react-redux";
 import {setMode} from "../redux/slice/mode";
 import {setDeviceType} from "../redux/slice/deviceType";
 import RightSkeleton from "../components/Loader/RightSkeleton";
+import Calendar from "../components/Calendar";
 
 const RightSidebar = () => {
   const dispatch = useDispatch();
@@ -29,7 +30,7 @@ const RightSidebar = () => {
     <aside className="
       w-full lg:w-64
       bg-gray-50 dark:bg-gray-900
-      p-4 space-y-4
+      p-4 space-y-[18px]
       text-gray-900 dark:text-gray-100 overflow-y-auto hide-scrollbar
     ">
       <ListTask head="Yearly Goal" body={year} onEdit={openYearlyGoal}/>
@@ -37,6 +38,8 @@ const RightSidebar = () => {
       <ListTask head="Daily Routine" body={routine} onEdit={openDailyRoutine} />
 
       <ListTask head="Today Task" body={today} onEdit={openTodayTask} />
+
+      <Calendar />
     </aside>
     )
   }

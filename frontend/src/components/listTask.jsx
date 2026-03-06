@@ -16,7 +16,7 @@ const ListTask = ({ head, body = [], onEdit }) => {
       break;
   }
   return (
-    <div className="bg-white dark:bg-gray-800 p-3 rounded-lg shadow hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors hover:translate-y-[-1px]" onClick={onEdit}>
+    <div className="border-[#2e3748] bg-white dark:bg-gray-800 p-3 rounded-[12px] p-[16px] shadow hover:bg-gray-50 dark:hover:bg-slate-700 cursor-pointer transition-colors hover:translate-y-[-1px]" onClick={onEdit}>
       <div className="flex justify-between items-center mb-2 pr-3">
         <h3 className="font-semibold flex items-center gap-2 ml-3">{image}{head}</h3>
 
