@@ -38,35 +38,29 @@ select:-webkit-autofill {
   }
 }
 
-/* Base = Light Mode */
-::-webkit-scrollbar {
-  width: 5px;
+.calendar-card{
+  background:#111827;
+  padding:16px;
+  border-radius:12px;
+  width:260px;
+  color:white;
 }
 
-::-webkit-scrollbar-track {
-  background: #e5e7eb; /* light */
+.rdp{
+  --rdp-cell-size:32px;
 }
 
-::-webkit-scrollbar-thumb {
-  background: #9ca3af;
-  border-radius: 12px;
+.rdp-day_selected{
+  background:#3b82f6;
+  color:white;
+  border-radius:6px;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: #6b7280;
+.rdp-day_today{
+  background:#1f2937;
+  border-radius:6px;
 }
 
-/* Dark Mode (System Preference) */
-@media (prefers-color-scheme: dark) {
-  ::-webkit-scrollbar-track {
-    background: #0f172a;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: #334155;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    background: #475569;
-  }
+.rdp-day:hover{
+  background:#1f2937;
 }

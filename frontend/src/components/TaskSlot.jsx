@@ -2,7 +2,7 @@ import { Pencil,Trash,CheckCircle  } from "lucide-react";
 const TodayTasks = ({ id, description, completed, onToggle, onAction, onError, onCurd, onRemove, onEdit, Routine, yearly }) => {
   const handleToggle = (id) => onToggle?.(id);
 
-  let color = completed == 'Completed' ? "bg-green-600/40 border-green-700" : "bg-amber-600/40 border-amber-700";
+  let color = completed == 'Completed' ? "bg-green-600/40 border-green-700" : "bg-slate-700/90 border-slate-700 hover:bg-slate-600";
 
   let updateSpan = description;
   switch (onAction) {
@@ -22,7 +22,7 @@ const TodayTasks = ({ id, description, completed, onToggle, onAction, onError, o
   }
   
   if(Routine){
-    color = 'bg-gray-600/40 border-gray-700';
+    color = 'bg-slate-700/90 border-slate-700';
   }
 
   if (onError) {
@@ -31,7 +31,7 @@ const TodayTasks = ({ id, description, completed, onToggle, onAction, onError, o
 
   return (
 <label
-  className={`flex items-center gap-3 w-full p-3 hover:translate-y-[-1px] rounded border cursor-pointer ${color}`}
+  className={`flex items-center gap-3 w-full px-3 py-3.5 hover:translate-y-[-1px] rounded border cursor-pointer ${color}`}
 >
   <input
     type="checkbox"

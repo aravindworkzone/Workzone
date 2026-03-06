@@ -41,12 +41,12 @@ exports.AddTask = async (req, res) => {
         break;
 
       case "Yearly Goal":
-        await YearlyGoal.create(baseData);
         AiRes = await AICall ('routine',description);
-        link = await YearlyGoal.findOne({description: {$regex: `^${description.trim()}`,$options: 'i'}, user: req.user.id, deleted: false }).select('_id');
         if (AiRes.error) {
           return res.status(400).json({ message: AiRes.error });
         }
+        const update = await YearlyGoal.create(baseData);
+        link = update._id;
         break;
 
       case "Daily Routine":
@@ -61,7 +61,7 @@ exports.AddTask = async (req, res) => {
         return res.status(400).json({ message: "Invalid mode" });
     }
 
-    res.status(201).json({ message: "Task added successfully", baseData, aiGenerated: AiRes, link: link._id || null });
+    res.status(201).json({ message: "Task added successfully", baseData, aiGenerated: AiRes, link: link || null });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
@@ -154,11 +154,17 @@ exports.GetTaskHistory = async (req, res) => {
       {$sort: {_id: -1}}
     ]);
 
+    const Month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+    let today = new Date();
+    today = Month[today.getMonth()] + ' ' + String(today.getDate()).padStart(2, '0')  + ' ' + today.getFullYear();
+    const yesterday = today.split(' ')[0] + ' ' + String(today.split(' ')[1] - 1).padStart(2, '0')  + ' ' + today.split(' ')[2];
+
     const history = taskHistory.map((t, i) => {
-      if(i == 0){
+      if(i == 0 && today == t._id){
         return {...t, day: "Today"}
       }
-      if(i == 1){
+      if(i == 1 && yesterday == t._id){
         return {...t, day: "Yesterday"}
       }
 

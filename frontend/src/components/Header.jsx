@@ -66,19 +66,31 @@ const Header = () => {
         </span>
       </div>
 
-      <div className="text-center">
-        <p className="text-xs text-gray-500 dark:text-gray-400">
-          Productivity (last 7 days)
-        </p>
-        <p
-          className={`text-lg font-semibold ${
-            productivity >= 70
-              ? "text-green-600"
-              : "text-red-600"
-          }`}
-        >
-          {productivity}%
-        </p>
+      <div className="flex flex-col gap-2">
+          <div className="text-center flex gap-2 items-center justify-center">
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            Productivity (last 7 days)
+          </p>
+          <p
+            className={`text-md font-semibold ${
+              productivity >= 70
+                ? "text-green-600"
+                : "text-red-600"
+            }`}
+          >
+            {productivity}%
+          </p>
+        </div>
+        <div className="hidden sm:block w-full h-2 bg-gray-200 rounded-full dark:bg-gray-700">
+          <div
+            className={`h-2 rounded-full ${
+              productivity >= 70
+                ? "bg-green-600"
+                : "bg-red-600"
+            }`}
+            style={{ width: `${productivity}%` }}
+          />
+        </div>
       </div>
 
       <div className="text-right">
