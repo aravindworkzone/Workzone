@@ -18,7 +18,7 @@ const Calendar = () => {
     for (let i = 1; i <= daysInMonth; i++) {
         const day = String(i).padStart(2, '0');
 
-        let bgColor = 'bg-red-200 dark:bg-red-400 dark:text-gray-900';
+        let bgColor = 'bg-red-500 dark:bg-red-400';
         const newJoin = i < joined.getDate() && today.getMonth() === joined.getMonth() && today.getFullYear() === joined.getFullYear();
 
         const match = taskStatus.data?.find(t => {
@@ -27,13 +27,13 @@ const Calendar = () => {
         })
 
         if(match) {
-            bgColor = 'bg-green-200 dark:bg-green-400';
+            bgColor = 'bg-green-500 dark:bg-green-400';
         } else if (today.getDate() < i || newJoin) {
-            bgColor = 'bg-gray-200 dark:bg-gray-900';
+            bgColor = 'bg-gray-500 dark:bg-gray-900';
         }
 
         if(today.getDate() === i) {
-            bgColor = 'bg-blue-200 dark:bg-blue-400';
+            bgColor = 'bg-blue-500 dark:bg-blue-400';
         }
 
         data.push({
@@ -52,7 +52,7 @@ const Calendar = () => {
             <div className="mt-2">
                 {data.map((d, i) => (
                     <div key={i} className="inline-flex flex-col items-center mb-1 gap-1">
-                        <span className={`inline-flex border-[#2e3748] items-center bg-gray-200 dark:bg-gray-900 m-0.5 justify-center w-6 h-6 text-xs rounded-full bg-slate-700 hover:bg-slate-600 `}>{i + 1}</span>
+                        <span className={`inline-flex border-[#2e3748] items-center bg-gray-200 dark:bg-gray-900 m-0.5 justify-center w-6 h-6 text-xs rounded-full bg-slate-300 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 `}>{i + 1}</span>
                         <span className={`inline-block w-1 h-1 rounded-full ${d.bgColor}`}></span>
                     </div>
                 ))}

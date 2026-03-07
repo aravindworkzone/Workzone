@@ -1,6 +1,6 @@
 import AddTask from "../components/AddTask";
 import TaskSlot from "../components/TaskSlot";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import MainSkeleton from "../components/Loader/MainSkeleton";
 import Popup from "../components/popup";
@@ -15,6 +15,20 @@ const TaskPart = () => {
   const [taskLoading, setTaskLoading] = useState({});
   const [taskError, setTaskError] = useState([]);
   const [popup, setpopup] = useState(null);
+
+  const [GoalTask] = useGoalTaskMutation();
+
+  useEffect(() => {
+    const fetchGoalTask = async () => {
+      try {
+        await GoalTask();
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchGoalTask();
+  }, []);
 
   const [updateTask] = useUpdateTaskMutation();
   const handleUpdate = async (id) => {
@@ -88,7 +102,6 @@ const TaskPart = () => {
   }
 
   const [addTask, { isLoading: addTaskLoading,error: addTaskError, isError: addTaskIsError }] = useAddTaskMutation();
-  const [GoalTask] = useGoalTaskMutation();
   const HandleAddTask = async (input, Ai = false) => {
     try {
       if (Ai) {
@@ -117,18 +130,20 @@ const TaskPart = () => {
 
         if (result.data.aiGenerated?.length) {
           setpopup(
-            result.data.aiGenerated.map((t) => (
-              <label key={t} className="flex gap-3 justify-start items-center pt-5 cursor-pointer">
-                <input
-                  type="checkbox"
-                  name="description"
-                  value={`${t} - ${result.data.link}`}
-                  className="peer hidden"
-                />
-                <div className="w-4 h-4 rounded-full border-2 border-gray-400 flex items-center justify-center peer-checked:bg-indigo-600 peer-checked:border-indigo-600 transition-all duration-200" />
-                <p>{t}</p>
-              </label>
-            ))
+            <section className="space-y-2.5">
+              {result.data.aiGenerated.map((t) => (
+                <label key={t} className="flex gap-3 justify-start items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    name="description"
+                    value={`${t} - ${result.data.link}`}
+                    className="peer hidden"
+                  />
+                  <div className="w-4 h-4 rounded-full border-2 border-gray-400 flex items-center justify-center peer-checked:bg-indigo-600 peer-checked:border-indigo-600 transition-all duration-200" />
+                  <p>{t}</p>
+                </label>
+              ))}
+            </section>
           );
         }
       }
@@ -142,17 +157,17 @@ const TaskPart = () => {
     <>
     {popup && <Popup children={popup} cleaner={setpopup} update={HandleAddTask} header={'Routine Suggestion'}/>}
     {
-      queryLoading ? <MainSkeleton /> : (<main className="flex-1 p-4 sm:p-6 overflow-y-auto hide-scrollbar">
+      queryLoading ? <MainSkeleton /> : (<main className="flex-1 p-4 sm:p-6 overflow-y-auto hide-scrollbar bg-white dark:bg-black">
       <AddTask UseCase={`Add ${mode.split(' ')[1]}`} HandleAddTask={HandleAddTask} mode={mode} isError={addTaskIsError} error={addTaskError} isLoading={addTaskLoading} />
       <div className="
-        bg-white dark:bg-gray-800
+        bg-gray-100 dark:bg-gray-800
         p-4 rounded-lg shadow
       ">
         <h2 className="font-semibold mb-3 text-gray-900 dark:text-gray-100">
           {mode}
         </h2>
 
-        <div className="space-y-2">
+        <div className="space-y-2.5">
           {tasks.length > 0 ? tasks.map((t) => <TaskSlot
             key={t._id}
             id={t._id}

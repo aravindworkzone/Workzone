@@ -3,9 +3,9 @@ import { useGetTaskQuery} from "../redux/api/task";
 import FooterSkeleton from "./Loader/FooterSkeleton";
 
 const Footer = ({appstatus, OnToggle}) => {
-  const { data: today, isLoading } = useGetTaskQuery('Today Task');
-  const { data: routine, isLoading: routineLoading } = useGetTaskQuery('Daily Routine');
-  const { data: year, isLoading: yearLoading } = useGetTaskQuery('Yearly Goal');
+  const { isLoading } = useGetTaskQuery('Today Task');
+  const { isLoading: routineLoading } = useGetTaskQuery('Daily Routine');
+  const { isLoading: yearLoading } = useGetTaskQuery('Yearly Goal');
 
   const base =
     "flex flex-col items-center text-xs transition";
@@ -25,7 +25,6 @@ const Footer = ({appstatus, OnToggle}) => {
           items-center justify-around
         "
       >
-        {/* History */}
         <button
           onClick={() => OnToggle("history")}
           className={`${base} ${appstatus === "history" ? active : inactive}`}
@@ -34,7 +33,6 @@ const Footer = ({appstatus, OnToggle}) => {
           <span>Insights</span>
         </button>
 
-        {/* Today */}
         <button
           onClick={() => OnToggle("today")}
           className={`${base} ${appstatus === "today" ? active : inactive}`}
@@ -43,7 +41,6 @@ const Footer = ({appstatus, OnToggle}) => {
           <span>Today</span>
         </button>
 
-        {/* Routine */}
         <button
           onClick={() => OnToggle("routine")}
           className={`${base} ${appstatus === "routine" ? active : inactive}`}
