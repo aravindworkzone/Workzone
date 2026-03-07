@@ -1,12 +1,12 @@
 import { useRef, useState, useEffect } from "react";
 import { useGetTaskQuery } from "../redux/api/task";
+import {Plus} from "lucide-react"
 
 const AddTask = ({ UseCase, HandleAddTask, mode, isError, error ,isLoading }) => {
   const taskInputRef = useRef(null);
   const [isShaking, setIsShaking] = useState(false);
   const [taskType, setTaskType] = useState('');
   const { data: year } = useGetTaskQuery('Yearly Goal');
-  const [placehold, setPlacehold] = useState('');
 
   const placeholders = {
     "Add Task": "What needs to be done today?",
@@ -43,7 +43,7 @@ const AddTask = ({ UseCase, HandleAddTask, mode, isError, error ,isLoading }) =>
   return (
     <form
       className="
-        bg-white dark:bg-gray-800
+        bg-gray-100 dark:bg-gray-800
         p-4 rounded-lg shadow
         mb-4
       "
@@ -99,15 +99,16 @@ const AddTask = ({ UseCase, HandleAddTask, mode, isError, error ,isLoading }) =>
           type="submit"
           disabled={isLoading}
           className="
-            bg-blue-600 hover:bg-blue-700
+            px-4 py-2
+            rounded-lg
+            bg-gradient-to-r from-blue-500 to-blue-600
+            hover:from-blue-600 hover:to-blue-700
             text-white
-            px-4 py-2 rounded cursor-pointer
-            transition-colors
-            disabled:opacity-50
-            disabled:cursor-not-allowed
-            disabled:px-5
-            hover:border-blue-500 hover:dark:border-blue-400
-            flex items-center justify-center
+            font-medium
+            shadow-md
+            transition-all
+            hover:shadow-lg
+            cursor-pointer
           "
         >
           {isLoading ? (
@@ -132,7 +133,9 @@ const AddTask = ({ UseCase, HandleAddTask, mode, isError, error ,isLoading }) =>
               </svg>
             </>
           ) : (
-            "Add"
+            <div className="flex items-center justify-center gap-1">
+              <Plus size={18} /> Add
+            </div>
           )}
           
         </button>

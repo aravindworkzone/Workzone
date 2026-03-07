@@ -30,11 +30,12 @@ const loginModal = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-[#0b1120] flex flex-col relative transition-colors">
+    <div className="min-h-screen bg-gray-100 dark:bg-[#0b1120] flex flex-col relative transition-colors">
       {/* HEADER */}
       <header className="sm:absolute sm:h-6 h-16 flex items-center justify-between px-[50px] top-[15px] w-full">
-        <div className="flex items-center gap-2">
-          <img src={logo} className="h-7" />
+        <div className="flex items-center mt-1 justify-center">
+          <img src={logo} className="h-10" />
+          <h1 className="text-xl dark:text-gray-100 font-bold text-gray-800 flex gap-1">Todo <span className="hidden sm:block">Planer</span></h1>
         </div>
 
         <div className="flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 cursor-pointer relative">
@@ -46,9 +47,7 @@ const loginModal = () => {
         </div>
       </header>
 
-      {/* CENTER CONTENT */}
       <main className="flex-1 flex items-center justify-center px-4">
-        {/* REGISTRATION CARD */}
         <div
           className="
             w-full max-w-md
@@ -71,7 +70,6 @@ const loginModal = () => {
             onSubmit={handleSubmit(onSubmit)}
             className="space-y-6 md:space-y-10 font-sans"
           >
-            {/* USERNAME */}
             <div>
               <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
                 Username
@@ -94,7 +92,6 @@ const loginModal = () => {
               )}
             </div>
 
-            {/* PASSWORD */}
             <div>
               <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
                 Password
@@ -130,7 +127,6 @@ const loginModal = () => {
               {/* <button className="text-blue-600 dark:text-blue-400 text-[11px] cursor-pointer hover:underline">Forget Password?</button> */}
             </div>
 
-            {/* BUTTON */}
             <button
               type="submit"
               disabled={isLoading}

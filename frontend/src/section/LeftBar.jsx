@@ -10,10 +10,10 @@ const LeftSidebar = () => {
   return (
     <>
     {
-      isLoading ? <LeftSkeleton /> : (<aside className="flex w-full lg:w-64 lg:border-r bg-gray-50 dark:bg-gray-900 flex-col justify-between p-4">
+      isLoading ? <LeftSkeleton /> : (<aside className="flex w-full lg:w-64 bg-gray-100 dark:bg-gray-900 flex-col justify-between p-4">
       
-      <div className="mb-2 bg-gray-50 dark:bg-gray-900">
-        <h2 className="text-lg font-semibold text-gray-600 dark:text-gray-300 mb-1">
+      <div className="mb-2">
+        <h2 className="text-lg font-semibold text-gray-700 dark:text-white mb-1">
           History
         </h2>
       </div>
@@ -30,7 +30,7 @@ const LeftSidebar = () => {
         ))}
       </div>
 
-      <div className="border-t pt-2 text-xs text-gray-500 dark:text-gray-400">
+      <div className="border-t border-gray-400 pt-2 text-xs text-gray-500 dark:text-gray-400">
         Started on{" "}
         <span className="font-medium text-gray-700 dark:text-gray-300">
           {taskStatus.joinDate}
