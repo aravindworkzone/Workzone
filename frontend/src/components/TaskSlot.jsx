@@ -1,5 +1,5 @@
 import { Pencil,Trash,CheckCircle  } from "lucide-react";
-const TodayTasks = ({ id, description, completed, onToggle, onAction, onError, onCurd, onRemove, onEdit, Routine, yearly }) => {
+const TodayTasks = ({ id, description, completed, onToggle, onAction, onError, onCurd, onRemove, onEdit, Routine, yearly, mode }) => {
   const handleToggle = (id) => onToggle?.(id);
 
   let color = completed == 'Completed' ? "from-green-300/40 via-green-200/40 to-green-300/40 border-green-400 dark:from-green-500/40 dark:via-green-600/50 dark:to-green-700/40 dark:border-green-700" : "bg-slate-200/90 border-slate-200 hover:bg-slate-300/50 dark:bg-slate-700/90 dark:border-slate-700 dark:hover:bg-slate-600/30";
@@ -112,7 +112,7 @@ return (
       onClick={(e) => e.preventDefault()}
     >
       <Pencil
-        className="text-black/50 hover:text-black dark:text-white/70 dark:hover:text-white transition w-4 h-4"
+        className={`text-black/50 hover:text-black dark:text-white/70 dark:hover:text-white transition w-4 h-4 ${mode == 'Yearly Goal' ? 'hidden' : ''}`}
         title="Edit"
         onClick={(e) => {
           e.preventDefault();

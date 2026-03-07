@@ -181,6 +181,7 @@ const TaskPart = () => {
             onEdit={handleEdit}
             yearly={mode !== 'Yearly Goal' ? t.yearly : false}
             Routine={mode === 'Daily Routine' ? true : false}
+            mode={mode}
           />) : (
           <div className="flex flex-col justify-center text-sm text-gray-600 dark:text-gray-400">
             <img
