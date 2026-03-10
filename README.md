@@ -1,108 +1,94 @@
-# Todo SaaS – MERN Stack
+# TodoPlanner – MERN Stack SaaS
 
-    This is a full-stack Todo SaaS built to understand how real applications handle authentication, session security, and scalable backend structure — not just CRUD operations.
+> A full-stack productivity SaaS that turns yearly goals into structured daily routines — with AI-powered generation, secure authentication, and 7-day productivity tracking.
 
-    The focus of this project was building production-style authentication and structured task relationships rather than a simple task list.
+🚀 **Live Demo:** [https://aravind-workzone.vercel.app/](https://aravind-workzone.vercel.app/)  
+📁 **Repo:** [https://gitlab.com/aravind.workzone/todo.git](https://gitlab.com/aravind.workzone/todo.git)
+
+---
+
+## Why I Built This
+
+Most todo apps are just lists. I wanted to build something that actually connects daily actions to long-term goals — and understand how real SaaS applications handle auth, session security, and scalable backend architecture while doing it.
+
+---
+
+## Screenshots
+
+> Dashboard  
+![Dashboard](./screenshots/dashboard.png)
+
+> Daily Routine  
+![Routine](./screenshots/routine.png)
+
+> Yearly Goals  
+![Goals](./screenshots/goals.png)
+
+> Login  
+![Login](./screenshots/login.png)
+
+---
 
 ## Features
 
-    ### Authentication & Security
+### Authentication & Security
+- JWT-based authentication using HTTP-only cookies
+- Short-lived access tokens with refresh token rotation on every use
+- Refresh token reuse detection — prevents replay attacks
+- Session invalidation on token mismatch
+- Middleware-protected routes with proper 401 / 403 handling
 
-        JWT-based authentication using HTTP-only cookies
+### Task System
+- Three task types: **Today Tasks**, **Daily Routines**, **Yearly Goals**
+- Routine → Today automatic daily sync
+- Goal-linked task relationships
+- Soft delete support
+- 7-day productivity tracking with progress bar
+- 30-day history aggregation
 
-        Short-lived access tokens
+### AI-Powered Routine Generation
+- Converts yearly goals into structured daily routines using AI
+- Controlled prompt engineering with structured JSON parsing
+- Auto-links generated routines back to their parent goals
 
-        Refresh token rotation on every use
+### Email Verification *(dev-ready)*
+- Secure random token generation with SHA256 hashed storage
+- Expiry validation and dedicated verification endpoint
+- Disabled in production pending email provider setup — fully functional in development
 
-        Refresh token reuse detection (prevents replay attacks)
-
-        Session invalidation on token mismatch
-
-        Middleware-protected routes
-
-        Proper 401 / 403 handling
-
-    ### Task System
-
-        Create, update, delete tasks
-
-    #### Task types:
-
-        Today Tasks
-
-        Daily Routines
-
-        Yearly Goals
-
-        Routine → Today automatic sync
-
-        Goal-linked task relationships
-
-        Soft delete support
-
-        7-day productivity tracking
-
-        30-day history aggregation
+---
 
 ## Tech Stack
 
-    ### Frontend:
+| Layer | Tech |
+|---|---|
+| Frontend | React (Vite), Tailwind CSS, Redux Toolkit + RTK Query |
+| Backend | Node.js, Express |
+| Database | MongoDB (Mongoose) |
+| Auth | JWT, HTTP-only cookies, Refresh token rotation |
+| AI | Gemini Integrated (Suggestion, error handling) |
 
-        React (Vite)
+---
 
-        Tailwind CSS
+## Architecture Highlights
 
-        Redux Toolkit + RTK Query
+- **Refresh token rotation** — every token use issues a new token and invalidates the old one
+- **Reuse detection** — if a used token is replayed, the entire session is invalidated
+- **Goal → Routine → Today pipeline** — tasks flow down from yearly goals to daily actions automatically
+- **RTK Query** — all API state managed with caching, invalidation, and optimistic updates
 
-    ### Backend:
+---
 
-        Node.js
+## Roadmap
 
-        Express
+- [ ] Forgot password flow
+- [ ] Role-based access control
+- [ ] Analytics dashboard
 
-        MongoDB (Mongoose)
-
-## Email Verification
-
-    Email verification is fully implemented with:
-
-    Secure random token generation
-
-    SHA256 hashed token storage
-
-    Expiry validation
-
-    Dedicated verification endpoint
-
-    Frontend verification flow
-
-#### Deployment Status:
-
-    Currently disabled in production because it requires a paid email service provider. The feature works in development and can be enabled in production once an email provider is configured.
-
-## AI-Powered Routine Generation 
-
-    Converts yearly goals into structured daily routines using AI  
-
-    Uses controlled prompt engineering  
-
-    Parses structured JSON responses  
-
-    Automatically links generated routines to goals  
-
-## Current Status
-
-    Working MVP.
-    Architecture designed for future expansion, including:
-
-    Forgot password flow
-
-    Role-based access
-
-    Analytics dashboard
-
-    AI-driven routine suggestions
+---
 
 ## Author
 
-Aravind A
+**Aravind A** — MERN Stack Developer
+
+📧 [aravind.workzone@email.com](mailto:aravind.workzone@email.com).

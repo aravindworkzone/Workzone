@@ -30,12 +30,12 @@ const loginModal = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-[#0b1120] flex flex-col relative transition-colors">
+    <div className="min-h-screen bg-gradient-to-br from-[#f8fafc] via-[#e2e8f0] to-[#f8fafc] dark:from-[#0f172a] dark:via-[#1e293b] dark:to-[#0f172a] flex flex-col relative transition-colors">
       {/* HEADER */}
       <header className="sm:absolute sm:h-6 h-16 flex items-center justify-between px-[50px] top-[15px] w-full">
         <div className="flex items-center mt-1 justify-center">
           <img src={logo} className="h-10" />
-          <h1 className="text-xl dark:text-gray-100 font-bold text-gray-800 flex gap-1">Todo <span className="hidden sm:block">Planer</span></h1>
+          <h1 className="text-xl dark:text-gray-100 font-bold text-gray-800 flex gap-1">Todo <span className="hidden sm:block">Planner</span></h1>
         </div>
 
         <div className="flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 cursor-pointer relative">
