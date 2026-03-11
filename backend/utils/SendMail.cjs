@@ -3,11 +3,11 @@ const dotenv = require("dotenv");
 
 dotenv.config();
 
-const resend = new Resend('re_YqyodMpc_Jp2rpL54Q8xXnNz2CVkygUEx');
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 const sendEmail = async ({ to, subject, html }) => {
   await resend.emails.send({
-    from: "Todo App <onboarding@resend.dev>",
+    from: 'onboarding@resend.dev',
     to,
     subject,
     html,

@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const UserActivation = require('../model/user.model.js');
 const Session = require('../model/session.model.js');
 const { sendEmail } = require('../utils/SendMail.cjs');
+const { MAIL_VERIFICATION } = require('../utils/contents.js');
 
 exports.register = async (req, res) => {
   try {
@@ -48,14 +49,7 @@ exports.register = async (req, res) => {
     await sendEmail({
       to: email,
       subject: "Verify your email",
-      html: `
-        <p>Hello 👋</p>
-        <p>To verify your email, click the link below:</p>
-        <a href="${verifyUrl}" style="color: #2563eb; font-weight: bold;">
-          Click To Verify
-        </a>
-        <p>If you did not request this, ignore this email.</p>
-      `,
+      html: MAIL_VERIFICATION(verifyUrl),
     });
 
     res.status(201).json({ message: "Registration successful. Verify your email." });

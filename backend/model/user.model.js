@@ -6,7 +6,7 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   emailToken:{ type: String },
   emailTokenExpired:{ type: String },
-  emailVerify:{ type: Boolean , default: true},
+  emailVerify:{ type: Boolean , default: false},
 }, { timestamps: true });
 
 const User = mongoose.model('UserAuth', userSchema);
