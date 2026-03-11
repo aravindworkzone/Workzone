@@ -2,7 +2,7 @@
 
 > A full-stack productivity SaaS that turns yearly goals into structured daily routines — with AI-powered generation, secure authentication, and 7-day productivity tracking.
 
-🚀 **Live Demo:** [https://aravind-workzone.vercel.app/](https://aravind-workzone.vercel.app/)  
+🚀 **Live Demo:** [https://workzone-todo.vercel.app/](https://workzone-todo.vercel.app/)  
 📁 **Repo:** [https://gitlab.com/aravind.workzone/todo.git](https://gitlab.com/aravind.workzone/todo.git)
 
 ---
