@@ -42,11 +42,13 @@ exports.AddTask = async (req, res) => {
 
       case "Yearly Goal":
         AiRes = await AICall ('routine',description);
-        if (AiRes.error) {
+        if (AiRes.error && AiRes.error?.status != '429') {
           return res.status(400).json({ message: AiRes.error });
         }
         const update = await YearlyGoal.create(baseData);
         link = update._id;
+        res.status(201).json({ message: "Task added successfully", baseData, aiGenerated: AiRes.error ? AiRes.error : AiRes, link: link || null });
+        return;
         break;
 
       case "Daily Routine":
