@@ -17,6 +17,7 @@ async function AICall(model,message) {
   } catch (error) {
     if (error.status === 429) {
       return {
+        status: 429,
         error: "AI service busy. Try again later for suggestions."
       };
     }
