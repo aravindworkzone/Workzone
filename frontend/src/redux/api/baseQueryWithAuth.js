@@ -7,20 +7,25 @@ const baseQuery = fetchBaseQuery({
 
 export const baseQueryWithAuth = async (args, api, extraOptions) => {
   const path = window.location.pathname;
-  const isPublic = ['/login', '/register','/verifyemail'].includes(path);
-  
+  const isPublic = ["/login", "/register", "/verifyemail"].includes(path);
+  const isRefreshAttempt =
+    args?.url === "/auth/refresh-token" || args === "/auth/refresh-token";
+
   const result = await baseQuery(args, api, extraOptions);
-  
-  if(result?.error?.status === 401 && !isPublic && !result?.error?.data?.refreshToken) {
-    const refreshResult = await baseQuery("/auth/refresh-token", api, extraOptions);
+
+  if (result?.error?.status === 401 && !isPublic && !isRefreshAttempt) {
+    const refreshResult = await baseQuery(
+      "/auth/refresh-token",
+      api,
+      extraOptions
+    );
 
     if (refreshResult?.error) {
       window.location.href = "/login";
       return refreshResult;
     }
 
-    const furtherProcess = await baseQuery(args, api, extraOptions);
-    return furtherProcess;
+    return await baseQuery(args, api, extraOptions);
   }
 
   if (result?.error?.status === 401 && !isPublic) {
