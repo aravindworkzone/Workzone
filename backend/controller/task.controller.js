@@ -5,73 +5,94 @@ const User = require("../model/user.model");
 const manogoose = require('mongoose');
 const { AICall } = require('../utils/GoogleGenAi');
 
+// taskController.js
+const MODULE_MAP = {
+  "Today Task": Task,
+  "Daily Routine": Routine,
+  "Yearly Goal": YearlyGoal,
+};
+
 exports.AddTask = async (req, res) => {
   try {
-    let { description, mode, link } = req.body;
-    const Module = {
-      "Today Task": Task,
-      "Daily Routine": Routine,
-      "Yearly Goal": YearlyGoal
-    }[mode];
+    const { description, mode, link } = req.body;
 
-    if (!description || description.length > 100) {
-      return res.status(400).json({ message: "Invalid Description" });
+    // --- Input validation first, before any DB/AI call ---
+    if (!description || typeof description !== "string" || description.trim().length === 0) {
+      return res.status(400).json({ message: "Description is required." });
     }
-
+    if (description.length > 100) {
+      return res.status(400).json({ message: "Description must be 100 characters or less." });
+    }
     if (!mode) {
-      return res.status(400).json({ message: "Mode is required" });
+      return res.status(400).json({ message: "Mode is required." });
     }
 
-    const validateTask = await Module.findOne({ description: {$regex: `^${description.trim()}`,$options: 'i'}, user: req.user.id, deleted: false });
-
-    if (validateTask) {
-      return res.status(400).json({ message: "Task already exists" });
+    const Module = MODULE_MAP[mode];
+    if (!Module) {
+      return res.status(400).json({ message: "Invalid mode." });
     }
 
-    const baseData = {
-      description,
+    // Escape user input before using in regex to prevent ReDoS
+    const escapedDesc = description.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const duplicate = await Module.findOne({
+      description: { $regex: `^${escapedDesc}$`, $options: "i" },
       user: req.user.id,
-    };
+      deleted: false,
+    });
 
-    let AiRes = null;
+    if (duplicate) {
+      return res.status(400).json({ message: "Task already exists." });
+    }
+
+    const baseData = { description: description.trim(), user: req.user.id };
 
     switch (mode) {
-      case "Today Task":
+      case "Today Task": {
         await Task.create(baseData);
-        break;
+        return res.status(201).json({ message: "Task added successfully.", data: baseData });
+      }
 
-      case "Yearly Goal":
-        AiRes = await AICall ('routine',description);
-        if (AiRes.error && AiRes.status !== 429) {
-          return res.status(400).json({ message: AiRes.error });
-        }
-        const update = await YearlyGoal.create(baseData);
-        link = update._id;
-        if (AiRes.error && AiRes.status === 429) {
-          return res.status(400).json({ message: AiRes.error });
-        }
-        return;
-        break;
+      case "Yearly Goal": {
+        const newGoal = await YearlyGoal.create(baseData);
 
-      case "Daily Routine":
+        const aiResult = await AICall("routine", description);
+        if (aiResult.error) {
+          return res.status(207).json({
+            data: { ...baseData, goalId: newGoal._id },
+            aiError: "Goal saved, "+aiResult.error.message,
+          });
+        }
+
+        return res.status(201).json({
+          message: "Task added successfully.",
+          data: { ...baseData, goalId: newGoal._id },
+          aiGenerated: aiResult.data,
+        });
+      }
+
+      case "Daily Routine": {
+        const routineLink = link || null;
         await Routine.create({
           ...baseData,
-          link: link || null,
-          yearly: link == "" ? false : true
+          link: routineLink,
+          yearly: !!routineLink,
         });
-        break;
+        return res.status(201).json({
+          message: "Task added successfully.",
+          data: baseData,
+          link: routineLink,
+        });
+      }
 
       default:
-        return res.status(400).json({ message: "Invalid mode" });
+        return res.status(400).json({ message: "Invalid mode." });
     }
 
-    res.status(201).json({ message: "Task added successfully", baseData, aiGenerated: AiRes, link: link || null });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error" });
+    console.error("[AddTask Error]", error);
+    return res.status(500).json({ message: "Server error." });
   }
-}
-
+};
 
 exports.GetTasks = async (req, res) => {
   try {
@@ -128,14 +149,14 @@ exports.GetTaskHistory = async (req, res) => {
 
     const taskHistory = await Task.aggregate([
       {
-        $match:{
+        $match: {
           user: new manogoose.Types.ObjectId(req.user.id),
-          createdAt: {$gte: startDate},
+          createdAt: { $gte: startDate },
           deleted: false,
         }
       },
       {
-        $group:{
+        $group: {
           _id: {
             $dateToString: {
               format: "%b %d %Y",
@@ -143,41 +164,48 @@ exports.GetTaskHistory = async (req, res) => {
               timezone: "Asia/Kolkata"
             }
           },
+          date: { $first: "$createdAt" }, 
           day: {
             $first: {
               $arrayElemAt: [
                 ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
-                { $subtract: [{ $dayOfWeek: "$createdAt" }, 1] }
+                {
+                  $subtract: [
+                    { $dayOfWeek: { date: "$createdAt", timezone: "Asia/Kolkata" } },  // fix: timezone-aware
+                    1
+                  ]
+                }
               ]
             }
           },
-          totalTasks: {$sum: 1},
-          completedTasks: {$sum: {$cond: [{$eq: ["$completed", 'Completed']}, 1, 0]}}
+          totalTasks: { $sum: 1 },
+          completedTasks: { $sum: { $cond: [{ $eq: ["$completed", "Completed"] }, 1, 0] } }
         }
       },
-      {$sort: {_id: -1}}
+      { $sort: { date: -1 } }
     ]);
 
-    const Month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const todayDate = new Date();
+    const yesterdayDate = new Date();
+    yesterdayDate.setDate(yesterdayDate.getDate() - 1);
 
-    let today = new Date();
-    today = Month[today.getMonth()] + ' ' + String(today.getDate()).padStart(2, '0')  + ' ' + today.getFullYear();
-    const yesterday = today.split(' ')[0] + ' ' + String(today.split(' ')[1] - 1).padStart(2, '0')  + ' ' + today.split(' ')[2];
+    const fmt = (d) => d.toLocaleDateString("en-US", {
+      month: "short", day: "2-digit", year: "numeric", timeZone: "Asia/Kolkata"
+    }).replace(/,/g, "");
+
+    const todayStr = fmt(todayDate);
+    const yesterdayStr = fmt(yesterdayDate);
 
     const history = taskHistory.map((t, i) => {
-      if(i == 0 && today == t._id){
-        return {...t, day: "Today"}
-      }
-      if(i == 1 && yesterday == t._id){
-        return {...t, day: "Yesterday"}
-      }
-
+      if (i === 0 && t._id === todayStr) return { ...t, day: "Today" };
+      if (i === 1 && t._id === yesterdayStr) return { ...t, day: "Yesterday" };
       return t;
     });
 
-    const joinDate = (await User.findById(req.user.id, { createdAt: 1 })).createdAt.toDateString().split(' ').slice(1).join(' ');
+    const user = await User.findById(req.user.id, { createdAt: 1 });
+    const joinDate = user.createdAt.toDateString().split(" ").slice(1).join(" ");
 
-    res.status(200).json({joinDate, data: history });
+    res.status(200).json({ joinDate, data: history });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });

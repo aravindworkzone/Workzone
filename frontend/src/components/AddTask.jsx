@@ -143,7 +143,7 @@ const AddTask = ({ UseCase, HandleAddTask, mode, isError, error ,isLoading }) =>
       {
         isShaking && (
           <span className="text-sm text-red-600 dark:text-red-400 ml-2">
-            {error?.data?.message}
+            {error}
           </span>
         )
       }
