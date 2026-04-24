@@ -101,64 +101,78 @@ const TaskPart = () => {
     }
   }
 
-  const [addTask, { isLoading: addTaskLoading,error: addTaskError, isError: addTaskIsError }] = useAddTaskMutation();
-  const HandleAddTask = async (input, Ai = false) => {
-    try {
-      if (Ai) {
-        for (let i = 0; i < input.length; i++) {
-          const data = input[i].split(" - ");
+  const [addTask, { isLoading: addTaskLoading }] = useAddTaskMutation();
+  const [addTaskError, setAddTaskError] = useState(null);
+const HandleAddTask = async (input, Ai = false) => {
+  if (Ai) {
+    const results = await Promise.allSettled(
+      input.map((item) => {
+        const [description, link] = item.split(" - ");
+        return addTask({ description, mode: "Daily Routine", link });
+      })
+    );
 
-          await addTask({
-            description: data[0],
-            mode: "Daily Routine",
-            link: data[1],
-          });
-        }
-        setpopup(null);
-        await GoalTask();
-        return;
-      }
-
-      const result = await addTask({
-        description: input.description,
-        mode: input.mode,
-        link: input.link,
-      });
-
-      if (result?.data) {
-        await GoalTask();
-
-        if (result.data.aiGenerated?.length) {
-          setpopup(
-            <section className="space-y-2.5">
-              {result.data.aiGenerated.map((t) => (
-                <label key={t} className="flex gap-3 justify-start items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    name="description"
-                    value={`${t} - ${result.data.link}`}
-                    className="peer hidden"
-                  />
-                  <div className="w-4 h-4 rounded-full border-2 border-gray-400 flex items-center justify-center peer-checked:bg-indigo-600 peer-checked:border-indigo-600 transition-all duration-200" />
-                  <p>{t}</p>
-                </label>
-              ))}
-            </section>
-          );
-        }
-      }
-
-    } catch (error) {
-      console.log(error);
+    const failed = results.filter((r) => r.status === "rejected");
+    if (failed.length) {
+      setAddTaskError(`${failed.length} task(s) failed to add.`);
     }
-  };
+
+    setpopup(null);
+    await GoalTask();
+    return;
+  }
+
+  try {
+    const result = await addTask({
+      description: input.description,
+      mode: input.mode,
+      link: input.link,
+    });
+
+    if (result?.error) {
+      setAddTaskError(result.error.data?.message ?? "Something went wrong.");
+      return;
+    }
+
+    await GoalTask();
+
+    if (result.data.aiError) {
+      setAddTaskError(result.data.aiError);
+      return;
+    }
+
+    if (result.data.aiGenerated?.length) {
+      const goalId = result.data.goalId;
+      setpopup(
+        <section className="space-y-2.5">
+          {result.data.aiGenerated.map((t) => (
+            <label key={t} className="flex gap-3 justify-start items-center cursor-pointer">
+              <input
+                type="checkbox"
+                name="description"
+                value={`${t} - ${goalId}`}
+                className="peer hidden"
+              />
+              <div className="w-4 h-4 rounded-full border-2 border-gray-400 flex items-center justify-center peer-checked:bg-indigo-600 peer-checked:border-indigo-600 transition-all duration-200" />
+              <p>{t}</p>
+            </label>
+          ))}
+        </section>
+      );
+    }
+
+  } catch (error) {
+    console.error("[HandleAddTask]", error);
+    setAddTaskError(error?.data?.message ?? "Something went wrong. Please try again.");
+  }
+};
 
   return (
     <>
     {popup && <Popup children={popup} cleaner={setpopup} update={HandleAddTask} header={'Routine Suggestion'}/>}
     {
       queryLoading ? <MainSkeleton /> : (<main className="flex-1 p-4 sm:p-6 overflow-y-auto hide-scrollbar bg-white dark:bg-black">
-      <AddTask UseCase={`Add ${mode.split(' ')[1]}`} HandleAddTask={HandleAddTask} mode={mode} isError={addTaskIsError} error={addTaskError} isLoading={addTaskLoading} />
+      <AddTask UseCase={`Add ${mode.split(' ')[1]}`} HandleAddTask={HandleAddTask} mode={mode} isError={addTaskError} error={addTaskError} isLoading={addTaskLoading} />
       <div className="
         bg-gray-100 dark:bg-gray-800
         p-4 rounded-lg shadow
