@@ -28,9 +28,7 @@ export const baseQueryWithAuth = async (args, api, extraOptions) => {
     }
 
     return await baseQuery(args, api, extraOptions);
-  }
-
-  if (result?.error?.status === 401 && !isPublic) {
+  } else if (result?.error?.status === 401 && !isPublic) {
     window.location.href = "/login";
   }
 
