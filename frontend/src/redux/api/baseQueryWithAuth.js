@@ -12,7 +12,9 @@ export const baseQueryWithAuth = async (args, api, extraOptions) => {
     args?.url === "/auth/refresh-token" || args === "/auth/refresh-token";
 
   const result = await baseQuery(args, api, extraOptions);
-
+  console.log(result?.error?.status);
+  console.log(isRefreshAttempt);
+  console.log(isPublic);
   if (result?.error?.status === 401 && !isRefreshAttempt) {
     const refreshResult = await baseQuery(
       "/auth/refresh-token",
