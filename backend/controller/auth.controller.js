@@ -245,14 +245,14 @@ exports.refreshToken = async (req, res) => {
 
     res.cookie("AccessToken", AccessToken, {
       httpOnly: true,
-      sameSite: 'none',
+      sameSite: 'lax',
       secure: true,
       maxAge: 15 * 60 * 1000,
     });
 
     res.cookie("RefreshToken", RefreshToken, {
       httpOnly: true,
-      sameSite: 'none',
+      sameSite: 'lax',
       secure: true,
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
