@@ -242,17 +242,17 @@ exports.refreshToken = async (req, res) => {
 
     console.log(AccessToken, "AccessToken");
     console.log(RefreshToken, "RefreshToken");
-
+    res.setHeader("Cache-Control", "no-store");
     res.cookie("AccessToken", AccessToken, {
       httpOnly: true,
-      sameSite: 'lax',
+      sameSite: 'none',
       secure: true,
       maxAge: 15 * 60 * 1000,
     });
 
     res.cookie("RefreshToken", RefreshToken, {
       httpOnly: true,
-      sameSite: 'lax',
+      sameSite: 'none',
       secure: true,
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
