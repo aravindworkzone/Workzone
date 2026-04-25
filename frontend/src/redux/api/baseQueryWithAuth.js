@@ -15,7 +15,7 @@ export const baseQueryWithAuth = async (args, api, extraOptions) => {
   console.log(result?.error?.status);
   console.log(isRefreshAttempt);
   console.log(isPublic);
-  if (result?.error?.status === 401 && !isRefreshAttempt) {
+  if (result?.error?.status === 401 && !isRefreshAttempt && !isPublic) {
     const refreshResult = await baseQuery(
       "/auth/refresh-token",
       api,
