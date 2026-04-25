@@ -23,13 +23,15 @@ export const baseQueryWithAuth = async (args, api, extraOptions) => {
     );
 
     if (refreshResult?.error) {
-      window.location.href = "/login";
+      console.log(refreshResult.error, 'refreshResult.error');
+      // window.location.href = "/login";
       return refreshResult;
     }
 
     return await baseQuery(args, api, extraOptions);
   } else if (result?.error?.status === 401 && !isPublic) {
-    window.location.href = "/login";
+    console.log(result.error, 'result.error');
+    // window.location.href = "/login";
   }
 
   return result;
