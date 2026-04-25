@@ -12,9 +12,7 @@ export const baseQueryWithAuth = async (args, api, extraOptions) => {
     args?.url === "/auth/refresh-token" || args === "/auth/refresh-token";
 
   const result = await baseQuery(args, api, extraOptions);
-  console.log(result?.error?.status);
-  console.log(isRefreshAttempt);
-  console.log(isPublic);
+
   if (result?.error?.status === 401 && !isRefreshAttempt && !isPublic) {
     const refreshResult = await baseQuery(
        {
@@ -27,15 +25,15 @@ export const baseQueryWithAuth = async (args, api, extraOptions) => {
     );
 
     if (refreshResult?.error) {
-      console.log(refreshResult.error, 'refreshResult.error');
-      // window.location.href = "/login";
+      window.location.href = "/login";
       return refreshResult;
     }
 
     return await baseQuery(args, api, extraOptions);
-  } else if (result?.error?.status === 401 && !isPublic) {
-    console.log(result.error, 'result.error');
-    // window.location.href = "/login";
+  }
+
+  if (result?.error?.status === 401 && !isPublic) {
+    window.location.href = "/login";
   }
 
   return result;

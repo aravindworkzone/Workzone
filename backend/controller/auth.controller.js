@@ -239,10 +239,7 @@ exports.refreshToken = async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: '7d' }
     );
-
-    console.log(AccessToken, "AccessToken");
-    console.log(RefreshToken, "RefreshToken");
-    res.setHeader("Cache-Control", "no-store");
+    
     res.cookie("AccessToken", AccessToken, {
       httpOnly: true,
       sameSite: 'none',
