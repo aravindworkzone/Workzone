@@ -240,6 +240,9 @@ exports.refreshToken = async (req, res) => {
       { expiresIn: '7d' }
     );
 
+    console.log(AccessToken, "AccessToken");
+    console.log(RefreshToken, "RefreshToken");
+
     res.cookie("AccessToken", AccessToken, {
       httpOnly: true,
       sameSite: 'none',
