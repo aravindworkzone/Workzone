@@ -19,7 +19,7 @@ const Header = () => {
     try {
       const result = await logoutUser().unwrap();
       if(result){
-        navigate("/login", { replace: true });
+        navigate("/", { replace: true });
       }
     } catch (error) {
       console.log(error);
@@ -29,7 +29,7 @@ const Header = () => {
   const { data, isLoading, isError } = useCheckUserQuery();
   useEffect(() => {
     if (isError && !isLoading) {
-      navigate("/login", { replace: true });
+      navigate("/", { replace: true });
     }
   }, [isError, isLoading, navigate]);
 
