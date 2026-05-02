@@ -26,7 +26,7 @@ const loginModal = () => {
   const onSubmit = async (e) => {
     const result = await loginUser(e).unwrap();
     if(!result) return;
-    navigate("/");
+    navigate("/dashboard");
   };
 
   return (
