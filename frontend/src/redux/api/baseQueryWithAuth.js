@@ -7,6 +7,7 @@ const baseQuery = fetchBaseQuery({
 
 export const baseQueryWithAuth = async (args, api, extraOptions) => {
   const path = window.location.pathname;
+  console.log(path);
   const isPublic = ["/", "/register", "/verifyemail"].includes(path);
   const isRefreshAttempt =
     args?.url === "/auth/refresh-token" || args === "/auth/refresh-token";
