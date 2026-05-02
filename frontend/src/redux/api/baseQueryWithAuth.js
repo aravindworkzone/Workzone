@@ -7,7 +7,7 @@ const baseQuery = fetchBaseQuery({
 
 export const baseQueryWithAuth = async (args, api, extraOptions) => {
   const path = window.location.pathname;
-  const isPublic = ["/login", "/register", "/verifyemail"].includes(path);
+  const isPublic = ["/", "/register", "/verifyemail"].includes(path);
   const isRefreshAttempt =
     args?.url === "/auth/refresh-token" || args === "/auth/refresh-token";
 
@@ -25,7 +25,7 @@ export const baseQueryWithAuth = async (args, api, extraOptions) => {
     );
 
     if (refreshResult?.error) {
-      window.location.href = "/login";
+      window.location.href = "/";
       return refreshResult;
     }
 
@@ -33,7 +33,7 @@ export const baseQueryWithAuth = async (args, api, extraOptions) => {
   }
 
   if (result?.error?.status === 401 && !isPublic) {
-    window.location.href = "/login";
+    window.location.href = "/";
   }
 
   return result;
