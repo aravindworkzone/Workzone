@@ -25,7 +25,7 @@ const Register = () => {
   const onSubmit = async(e) => {
     const result = await registerUser(e).unwrap();
     if(result){
-      navigate("/login");
+      navigate("/");
     }
   };
 
@@ -223,7 +223,7 @@ const Register = () => {
 
           <p className="text-sm text-gray-500 dark:text-gray-400 text-center mt-8">
             Already have an account?{" "}
-            <Link to="/login" className="text-blue-600 dark:text-blue-400 font-medium cursor-pointer hover:underline">
+            <Link to="/" className="text-blue-600 dark:text-blue-400 font-medium cursor-pointer hover:underline">
               Sign in
             </Link>
           </p>
