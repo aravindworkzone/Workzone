@@ -82,4 +82,4 @@ Most todo apps are just lists. I wanted to build something that actually connect
 
 **Aravind A** — MERN Stack Developer
 
-📧 [aravind.workzone@email.com](mailto:aravind.workzone@email.com).
+📧 [aravind.workzone@gmail.com](mailto:aravind.workzone@gmail.com).
