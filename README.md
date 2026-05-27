@@ -78,14 +78,6 @@ Most todo apps are just lists. I wanted to build something that actually connect
 
 ---
 
-## Roadmap
-
-- [ ] Forgot password flow
-- [ ] Role-based access control
-- [ ] Analytics dashboard
-
----
-
 ## Author
 
 **Aravind A** — MERN Stack Developer
