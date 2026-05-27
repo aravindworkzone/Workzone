@@ -1,4 +1,4 @@
-# # WorkZone – AI-Powered Goal-to-Routine SaaS
+# WorkZone – AI-Powered Goal-to-Routine SaaS
 
 > A full-stack productivity SaaS that turns yearly goals into structured daily routines — with AI-powered generation, secure authentication, and 7-day productivity tracking.
 
