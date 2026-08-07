@@ -11,6 +11,14 @@ export const auth_api = BaseApi.injectEndpoints({
             }),
             invalidatesTags: ['Auth'],
         }),
+        revokeSessions: builder.mutation({
+            query: (body) => ({
+                url: 'auth/sessions/revoke',
+                method: 'POST',
+                body,
+            }),
+            invalidatesTags: ['Auth'],
+        }),
         logoutUser: builder.mutation({
             query: (credentials) => ({
                 url: 'auth/logout',
@@ -44,4 +52,4 @@ export const auth_api = BaseApi.injectEndpoints({
     }),
 })
 
-export const { useLoginUserMutation, useLogoutUserMutation, useRegisterUserMutation, useCheckUserQuery, useVerifyEmailQuery } = auth_api;
+export const { useLoginUserMutation, useLogoutUserMutation, useRevokeSessionsMutation, useRegisterUserMutation, useCheckUserQuery, useVerifyEmailQuery } = auth_api;

@@ -1,10 +1,96 @@
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
 const UserActivation = require('../model/user.model.js');
 const Session = require('../model/session.model.js');
 const { sendEmail } = require('../utils/SendMail.cjs');
 const { MAIL_VERIFICATION } = require('../utils/contents.js');
+
+// Read lazily: dotenv is configured after this module is required.
+const maxSessions = () => Number(process.env.MAX_SESSIONS) || 3;
+
+const deviceLabel = (userAgent = "") => {
+  const browser =
+    /Edg\//i.test(userAgent) ? "Edge" :
+    /OPR\/|Opera/i.test(userAgent) ? "Opera" :
+    /Chrome\//i.test(userAgent) ? "Chrome" :
+    /Firefox\//i.test(userAgent) ? "Firefox" :
+    /Safari\//i.test(userAgent) ? "Safari" : "Unknown browser";
+
+  const os =
+    /Windows/i.test(userAgent) ? "Windows" :
+    /Android/i.test(userAgent) ? "Android" :
+    /iPhone|iPad|iPod/i.test(userAgent) ? "iOS" :
+    /Mac OS X/i.test(userAgent) ? "macOS" :
+    /Linux/i.test(userAgent) ? "Linux" : "Unknown device";
+
+  return `${browser} on ${os}`;
+};
+
+// Sessions the user has to pick from when the device limit is reached.
+const activeSessions = async (userId, exceptId) => {
+  const filter = { user: userId, isValid: true };
+  if (exceptId) filter._id = { $ne: exceptId };
+
+  const sessions = await Session.find(filter).sort({ updatedAt: -1 });
+
+  return sessions.map((session) => ({
+    id: session._id,
+    device: deviceLabel(session.userAgent),
+    ipAddress: session.ipAddress,
+    lastActive: session.updatedAt,
+  }));
+};
+
+// Short lived token that lets the blocked device free a slot without sending
+// the password again. Rejected by the auth middleware, so it is not an access token.
+const sessionManageToken = (userId) => jwt.sign(
+  { id: userId, purpose: 'session-manage' },
+  process.env.JWT_SECRET,
+  { expiresIn: '5m' }
+);
+
+// Creates (or revives) the session for this device and sets both cookies.
+const startSession = async (req, res, userId) => {
+  const userAgent = req.headers["user-agent"];
+  const ipAddress = req.ip;
+
+  const AccessToken = jwt.sign(
+    { id: userId },
+    process.env.JWT_SECRET,
+    { expiresIn: '15m' }
+  );
+
+  const RefreshToken = jwt.sign(
+    { id: userId },
+    process.env.JWT_SECRET,
+    { expiresIn: '7d' }
+  );
+
+  const refreshToken = crypto.createHash('sha256').update(RefreshToken).digest('hex');
+
+  const DiviceExist = await Session.findOne({ user: userId, ipAddress });
+  if (!DiviceExist) {
+    await Session.create({ user: userId, refreshToken, ipAddress, userAgent });
+  } else {
+    await Session.updateOne({ user: userId, ipAddress }, { refreshToken, userAgent, isValid: true });
+  }
+
+  res.cookie("AccessToken", AccessToken, {
+    httpOnly: true,
+    sameSite: 'none',
+    secure: true,
+    maxAge: 15 * 60 * 1000,
+  });
+
+  res.cookie("RefreshToken", RefreshToken, {
+    httpOnly: true,
+    sameSite: 'none',
+    secure: true,
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  });
+};
 
 exports.register = async (req, res) => {
   try {
@@ -64,7 +150,6 @@ exports.login = async (req, res) => {
   try {
     const username = req.body.username.trim();
     const password = req.body.password.trim();
-    const userAgent = req.headers["user-agent"];
     const ipAddress = req.ip;
 
     const user = await UserActivation.findOne({ username });
@@ -86,45 +171,89 @@ exports.login = async (req, res) => {
       });
     }
 
-    const AccessToken = jwt.sign(
-      { id: user._id },
-      process.env.JWT_SECRET,
-      { expiresIn: '15m' }
-    );
-
-    const RefreshToken = jwt.sign(
-      { id: user._id },
-      process.env.JWT_SECRET,
-      { expiresIn: '7d' }
-    );
-
-    const refreshToken = crypto.createHash('sha256').update(RefreshToken).digest('hex');
-
-    const SessionCount = await Session.countDocuments({user: user._id, isValid: true});
-    if (SessionCount >= 3) {
-      return res.status(400).json({ message: "Maximum session limit reached. Please log out from other devices." });
-    }
-
+    // This device keeps its own slot, so only the other devices count towards the limit.
     const DiviceExist = await Session.findOne({user: user._id, ipAddress});
-    if (!DiviceExist) {
-      await Session.create({user: user._id, refreshToken, ipAddress, userAgent});
-    } else {
-      await Session.updateOne({user: user._id, ipAddress}, {refreshToken, isValid: true});
+    const SessionCount = await Session.countDocuments({
+      user: user._id,
+      isValid: true,
+      ...(DiviceExist ? { _id: { $ne: DiviceExist._id } } : {}),
+    });
+
+    if (SessionCount >= maxSessions()) {
+      return res.status(403).json({
+        message: "Maximum session limit reached. Log out from one of these devices to continue.",
+        sessionLimit: true,
+        maxSessions: maxSessions(),
+        sessionToken: sessionManageToken(user._id),
+        sessions: await activeSessions(user._id, DiviceExist?._id),
+      });
     }
 
-    res.cookie("AccessToken", AccessToken, {
-      httpOnly: true,
-      sameSite: 'none',
-      secure: true,
-      maxAge: 15 * 60 * 1000,
+    await startSession(req, res, user._id);
+
+    res.status(200).json({ message: "User logged in successfully", user: user.username });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// Logs the picked devices out on behalf of a device that was blocked by the
+// session limit, then signs that device in.
+exports.revokeSessions = async (req, res) => {
+  try {
+    const { sessionToken, sessionIds } = req.body;
+
+    if (!sessionToken || !Array.isArray(sessionIds) || sessionIds.length === 0) {
+      return res.status(400).json({ message: "Select a device to log out" });
+    }
+
+    let decoded;
+    try {
+      decoded = jwt.verify(sessionToken, process.env.JWT_SECRET);
+    } catch (error) {
+      return res.status(401).json({ message: "Session expired. Please login again." });
+    }
+
+    if (decoded.purpose !== 'session-manage') {
+      return res.status(401).json({ message: "Invalid token" });
+    }
+
+    const user = await UserActivation.findById(decoded.id);
+    if (!user) {
+      return res.status(401).json({ message: "Invalid token" });
+    }
+
+    const validIds = sessionIds.filter((id) => mongoose.Types.ObjectId.isValid(id));
+    if (validIds.length === 0) {
+      return res.status(400).json({ message: "Select a device to log out" });
+    }
+
+    // Scoped to this user, so a session id from another account cannot be killed.
+    await Session.updateMany(
+      { _id: { $in: validIds }, user: user._id },
+      { isValid: false }
+    );
+
+    const ipAddress = req.ip;
+    const DiviceExist = await Session.findOne({ user: user._id, ipAddress });
+    const SessionCount = await Session.countDocuments({
+      user: user._id,
+      isValid: true,
+      ...(DiviceExist ? { _id: { $ne: DiviceExist._id } } : {}),
     });
 
-    res.cookie("RefreshToken", RefreshToken, {
-      httpOnly: true,
-      sameSite: 'none',
-      secure: true,
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+    if (SessionCount >= maxSessions()) {
+      return res.status(403).json({
+        message: "Still at the device limit. Log out from one more device to continue.",
+        sessionLimit: true,
+        maxSessions: maxSessions(),
+        sessionToken: sessionManageToken(user._id),
+        sessions: await activeSessions(user._id, DiviceExist?._id),
+      });
+    }
+
+    await startSession(req, res, user._id);
 
     res.status(200).json({ message: "User logged in successfully", user: user.username });
   } catch (error) {
