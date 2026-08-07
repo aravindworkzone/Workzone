@@ -8,6 +8,12 @@ exports.authenticate = async (req, res, next) => {
 
   try {
     const decoded = jwt.verify(accessToken, process.env.JWT_SECRET);
+
+    // Purpose bound tokens (eg. session-manage) are not access tokens.
+    if (decoded.purpose) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
     req.user = decoded;
     next();
   }catch (error) {

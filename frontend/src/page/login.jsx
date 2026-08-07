@@ -4,9 +4,10 @@ import { loginSchema } from "../utils/zodValid";
 import { zodResolver } from "@hookform/resolvers/zod";
 import logo from "../assets/todo_logo.png";
 import helpIcon from "../assets/help.png";
-import { useLoginUserMutation } from "../redux/api/auth";
+import { useLoginUserMutation, useRevokeSessionsMutation } from "../redux/api/auth";
 import { useNavigate, Link } from "react-router-dom";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Monitor } from "lucide-react";
+import Popup from "../components/popup";
 
 const loginModal = () => {
   const {
@@ -19,15 +20,112 @@ const loginModal = () => {
 
   const [showPassword, setShowPassword] = useState(false);
 
+  // Holds the active devices + short lived token sent back when the session limit is hit.
+  const [sessionLimit, setSessionLimit] = useState(null);
+  const [revokeError, setRevokeError] = useState("");
+
   const navigate = useNavigate();
 
   const [loginUser, {isError, error, isLoading}] = useLoginUserMutation();
+  const [revokeSessions, { isLoading: revokeLoading }] = useRevokeSessionsMutation();
 
   const onSubmit = async (e) => {
-    const result = await loginUser(e).unwrap();
-    if(!result) return;
-    navigate("/dashboard");
+    try {
+      const result = await loginUser(e).unwrap();
+      if(!result) return;
+      navigate("/dashboard");
+    } catch (err) {
+      if (err?.data?.sessionLimit) {
+        setRevokeError("");
+        setSessionLimit(err.data);
+      }
+    }
   };
+
+  const handleRevoke = async (selected) => {
+    const sessionIds = (selected || []).filter(Boolean);
+    if (sessionIds.length === 0) {
+      setRevokeError("Select at least one device to log out");
+      return;
+    }
+
+    try {
+      const result = await revokeSessions({
+        sessionToken: sessionLimit.sessionToken,
+        sessionIds,
+      }).unwrap();
+
+      if(!result) return;
+      setSessionLimit(null);
+      navigate("/dashboard");
+    } catch (err) {
+      if (err?.data?.sessionLimit) {
+        setSessionLimit(err.data);
+        setRevokeError(err.data.message);
+        return;
+      }
+      setRevokeError(err?.data?.message || "Could not log out the selected devices");
+    }
+  };
+
+  const formatLastActive = (value) => {
+    const date = new Date(value);
+    return isNaN(date) ? "Unknown" : date.toLocaleString();
+  };
+
+  if (sessionLimit) {
+    return (
+      <Popup
+        header={"Device limit reached"}
+        cleaner={() => { setSessionLimit(null); setRevokeError(""); }}
+        update={handleRevoke}
+        submit={"Logout"}
+        Cancel={"Cancel"}
+      >
+        <div className="font-sans">
+          <p className="text-sm text-gray-700 dark:text-gray-300">
+            You are logged in on {sessionLimit.maxSessions} devices. Select the ones to log
+            out so you can continue on this device.
+          </p>
+
+          <ul className="mt-4 space-y-2 max-h-[240px] overflow-y-auto">
+            {sessionLimit.sessions?.map((session) => (
+              <li key={session.id}>
+                <label className="flex items-start gap-3 cursor-pointer rounded-lg bg-white dark:bg-slate-900 px-3 py-2 hover:bg-gray-100 dark:hover:bg-slate-800">
+                  <input
+                    type="checkbox"
+                    name="description"
+                    value={session.id}
+                    className="mt-1 h-4 w-4 accent-red-600 cursor-pointer"
+                  />
+                  <span className="flex-1">
+                    <span className="flex items-center gap-2 text-sm font-medium">
+                      <Monitor size={14} />
+                      {session.device}
+                    </span>
+                    <span className="block text-xs text-gray-500 dark:text-gray-400">
+                      IP {session.ipAddress || "unknown"} · Last active{" "}
+                      {formatLastActive(session.lastActive)}
+                    </span>
+                  </span>
+                </label>
+              </li>
+            ))}
+          </ul>
+
+          {revokeError && (
+            <p className="text-xs text-red-500 mt-3">{revokeError}</p>
+          )}
+
+          {revokeLoading && (
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-3">
+              Logging out the selected devices...
+            </p>
+          )}
+        </div>
+      </Popup>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#f8fafc] via-[#e2e8f0] to-[#f8fafc] dark:from-[#0f172a] dark:via-[#1e293b] dark:to-[#0f172a] flex flex-col relative transition-colors">
@@ -121,7 +219,7 @@ const loginModal = () => {
               )}
               {isError && (
                 <p className="text-xs text-red-500 mt-1">
-                  {error.data.message}
+                  {error?.data?.message || "Something went wrong. Please try again."}
                 </p>
               )}
               {/* <button className="text-blue-600 dark:text-blue-400 text-[11px] cursor-pointer hover:underline">Forget Password?</button> */}
