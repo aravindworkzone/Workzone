@@ -4,6 +4,7 @@ import EmailVerified from "./page/EmailVerified";
 import Login from './page/login';
 import Home from './page/home';
 import { Route, Routes} from 'react-router-dom';
+import { Analytics } from '@vercel/analytics/react';
 
 function App() {
 
@@ -15,6 +16,7 @@ function App() {
         <Route path="/" element={<Login />} />
         <Route path="/verifyemail" element={<EmailVerified />} />
       </Routes>
+      <Analytics />
     </>
   )
 }
