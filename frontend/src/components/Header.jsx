@@ -1,4 +1,5 @@
-import { LogOut } from "lucide-react";
+import { Download, LogOut } from "lucide-react";
+import useInstallPrompt, { isIos, isStandalone } from "../hooks/useInstallPrompt";
 import logo from "../assets/main_logo.png";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -13,7 +14,14 @@ const Header = () => {
   const { data: productivity = 0, isLoading: productivityLoading } = useProductivityQuery();
 
   const [logoutPop, setLogoutPop] = useState(false);
-  
+
+  // Install: Chrome/Edge get the real prompt; iPhone/iPad (no prompt there) get
+  // the Share → Add to Home Screen steps. Hidden once running as the app.
+  const { canInstall, promptInstall } = useInstallPrompt();
+  const [showIosHint, setShowIosHint] = useState(false);
+  const iosInstall = !canInstall && isIos();
+  const showInstall = !isStandalone() && (canInstall || iosInstall);
+
   const [logoutUser, { isLoading: logoutLoading }] = useLogoutUserMutation();
   const handleLogout = async () => {
     try {
@@ -99,7 +107,32 @@ const Header = () => {
         </div>
 
         <div className="text-right">
-          <div className="flex items-center justify-end gap-3">
+          <div className="flex items-center justify-end gap-2 sm:gap-3">
+            {showInstall && (
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => (canInstall ? promptInstall() : setShowIosHint((v) => !v))}
+                  aria-expanded={iosInstall ? showIosHint : undefined}
+                  title="Install app"
+                  className="flex items-center justify-center gap-1.5 h-7 w-7 sm:h-8 sm:w-auto sm:px-3 rounded-lg text-sm font-medium
+                    text-blue-700 dark:text-blue-300 border border-blue-300 dark:border-blue-700
+                    hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors cursor-pointer"
+                >
+                  <Download className="h-4 w-4" aria-hidden="true" />
+                  <span className="hidden sm:inline">Install app</span>
+                </button>
+                {iosInstall && showIosHint && (
+                  <p
+                    role="status"
+                    className="absolute right-0 top-full mt-2 z-50 w-60 rounded-lg border border-gray-300 dark:border-gray-700
+                      bg-white dark:bg-slate-800 p-3 text-left text-xs text-gray-800 dark:text-gray-200 shadow-lg"
+                  >
+                    Tap the Share button, then “Add to Home Screen”.
+                  </p>
+                )}
+              </div>
+            )}
             <LogOut onClick={() => setLogoutPop(true)} className="inline-block h-6 w-6 mr-2 cursor-pointer text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
               <title>Logout</title>
             </LogOut>
